@@ -52,17 +52,28 @@ export default function ProjectModal({ project, onClose }) {
           >
             <div className="grid max-h-[92vh] overflow-y-auto lg:grid-cols-2">
               <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r">
-                <div className="relative mb-4 aspect-video overflow-hidden rounded-xl bg-white/5">
+                <div className="relative mb-4 h-[300px] md:h-[400px] lg:h-[480px] w-full overflow-hidden rounded-xl bg-black/40 flex items-center justify-center p-4">
+                  {/* Ambient Blurred Backdrop */}
+                  <img
+                    src={activeImage}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover opacity-20 blur-xl scale-110 pointer-events-none"
+                    aria-hidden="true"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+
                   <AnimatePresence mode="wait">
                     <motion.img
                       key={activeImage}
                       src={activeImage}
                       alt={`${project.title} preview`}
-                      className="h-full w-full object-cover"
+                      className="relative z-10 max-h-full max-w-full object-contain rounded-lg shadow-xl"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      transition={{ duration: 0.35 }}
+                      transition={{ duration: 0.25 }}
                       onError={(e) => {
                         e.currentTarget.src =
                           'data:image/svg+xml,' +
@@ -90,7 +101,7 @@ export default function ProjectModal({ project, onClose }) {
                         <img
                           src={image}
                           alt=""
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain p-1"
                           onError={(e) => {
                             e.currentTarget.src =
                               'data:image/svg+xml,' +

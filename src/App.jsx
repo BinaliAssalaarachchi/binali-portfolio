@@ -7,6 +7,9 @@ import ProcessTimeline from './components/ProcessTimeline'
 import Projects from './components/Projects'
 import Skills from './components/Skills'
 import TechStack from './components/TechStack'
+import Education from './components/Education'
+import Leadership from './components/Leadership'
+import Certifications from './components/Certifications'
 
 export default function App() {
   const [loading, setLoading] = useState(true)
@@ -22,6 +25,9 @@ export default function App() {
         <ProcessTimeline />
         <Projects />
         <Skills />
+        <Education />
+        <Leadership />
+        <Certifications />
         <Footer />
       </main>
     </>

@@ -103,8 +103,8 @@ export const projects = [
     stack: ['Java', 'OOP Principles'],
     summary:
       'Built an order management component with strong object-oriented design and clean modular structure.',
-    image: '/projects/order.jpg',
-    gallery: ['/projects/order.jpg'],
+    image: '/projects/order.png',
+    gallery: ['/projects/order.png'],
     contributions: [],
     repo: null,
   },
