@@ -136,7 +136,7 @@ export default function TechStack() {
   return (
     <section id="tech-stack" className="relative overflow-hidden bg-canvas px-6 pt-4 pb-4 lg:px-10 lg:pt-6 lg:pb-6">
       {/* Dynamic Background Grid and Glows */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(255,255,255,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.8)_1px,transparent_1px)] [background-size:60px_60px]" />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background-image:linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:60px_60px]" />
       
       <div className="absolute -left-1/4 top-1/4 h-96 w-96 rounded-full bg-accent/5 blur-[120px] pointer-events-none" />
       <div className="absolute -right-1/4 bottom-1/4 h-96 w-96 rounded-full bg-accent/5 blur-[120px] pointer-events-none" />

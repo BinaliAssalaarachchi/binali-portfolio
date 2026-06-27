@@ -3,7 +3,7 @@ import About from './components/About'
 import Footer from './components/Footer'
 import Hero from './components/Hero'
 import Preloader from './components/Preloader'
-import ProcessTimeline from './components/ProcessTimeline'
+import ServiceSection from './components/ServiceSection'
 import Projects from './components/Projects'
 import Skills from './components/Skills'
 import TechStack from './components/TechStack'
@@ -22,7 +22,7 @@ export default function App() {
         <Hero />
         <About />
         <TechStack />
-        <ProcessTimeline />
+        <ServiceSection />
         <Projects />
         <Skills />
         <Education />
