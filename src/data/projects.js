@@ -1,5 +1,28 @@
 export const projects = [
   {
+    id: 'cinematch',
+    title: 'CineMatch — AI-Powered Movie Recommender & Stream Finder',
+    metadata: 'Personal Project • AI & Full-Stack',
+    stack: ['React.js', 'Python (Django)', 'Scikit-learn', 'Pandas', 'MySQL', 'API Integration'],
+    summary:
+      'An AI-powered movie recommender web application suggesting what to watch next based on real taste, integrating TMDB and JustWatch APIs.',
+    image: '/projects/cinematch-recommendations.png',
+    gallery: [
+      '/projects/cinematch-recommendations.png',
+      '/projects/cinematch.png',
+      '/projects/cinematch-search.png',
+    ],
+    contributions: [
+      'Built a content-based recommendation model using Scikit-learn and Pandas, measuring movie similarity via cosine similarity on genre tags.',
+      'Developed a Django REST API backend to process and serve movie recommendations in real time.',
+      'Designed and implemented a responsive, sleek React.js frontend dashboard featuring glassmorphic design and micro-animations.',
+      'Integrated TMDB API for fetching real-time movie posters, user ratings, and plot descriptions.',
+      'Integrated JustWatch API/widget allowing users to instantly find local streaming provider availability (Netflix, Prime, Disney+, etc.).',
+      'Designed smooth search experience with dynamic dropdowns, predictive query handling, and custom loading states.',
+    ],
+    repo: 'https://github.com/BinaliAssalaarachchi/cinematch',
+  },
+  {
     id: 'student-performance',
     title: 'Student Performance Prediction & Customized Study Schedule Generation',
     metadata: 'BCS PGD • Individual • Completed & Passed',
