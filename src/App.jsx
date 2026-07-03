@@ -10,6 +10,7 @@ import TechStack from './components/TechStack'
 import Education from './components/Education'
 import Leadership from './components/Leadership'
 import Certifications from './components/Certifications'
+import Navigation from './components/Navigation'
 
 export default function App() {
   const [loading, setLoading] = useState(true)
@@ -17,6 +18,7 @@ export default function App() {
   return (
     <>
       {loading && <Preloader onComplete={() => setLoading(false)} />}
+      {!loading && <Navigation />}
 
       <main className={loading ? 'overflow-hidden' : undefined}>
         <Hero />
