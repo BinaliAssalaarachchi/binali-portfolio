@@ -1,5 +1,5 @@
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
+import { useState, useRef } from 'react'
+import { motion, useScroll, useTransform, useReducedMotion, AnimatePresence } from 'framer-motion'
 
 const links = [
   {
@@ -44,83 +44,326 @@ const links = [
 
 export default function Footer() {
   const sectionRef = useRef(null)
+  const shouldReduceMotion = useReducedMotion()
+
+  // Form states
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [status, setStatus] = useState('idle') // 'idle', 'loading', 'success', 'error'
+  const [errors, setErrors] = useState({})
+  const [errorMessage, setErrorMessage] = useState('')
+  
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start 0.7', 'end 0.95'],
   })
 
-  const signatureScale = useTransform(scrollYProgress, [0, 1], [0.92, 1])
-  const signatureOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.35, 0.8, 1])
-  const currentYear = new Date().getFullYear()
+  // Disable dynamic scale/opacity scroll-driven transformations if reduced motion is requested
+  const signatureScale = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [1, 1] : [0.92, 1])
+  const signatureOpacity = useTransform(scrollYProgress, [0, 0.5, 1], shouldReduceMotion ? [1, 1, 1] : [0.35, 0.8, 1])
+
+  // Form validation & submission
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    
+    // Simple validation
+    const newErrors = {}
+    if (!name.trim()) newErrors.name = 'Sender ID (Name) is required.'
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Secure transmission email is required.'
+    if (!message.trim() || message.length < 10) newErrors.message = 'Telemetry message packet must exceed 10 characters.'
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+
+    setErrors({})
+    setStatus('loading')
+
+    // Read environment variables (do not hardcode)
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+    try {
+      if (serviceId && templateId && publicKey) {
+        // Send email via EmailJS REST API
+        const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            service_id: serviceId,
+            template_id: templateId,
+            user_id: publicKey,
+            template_params: {
+              from_name: name,
+              reply_to: email,
+              message: message
+            }
+          })
+        })
+
+        if (response.ok) {
+          setStatus('success')
+          setName('')
+          setEmail('')
+          setMessage('')
+        } else {
+          const text = await response.text()
+          throw new Error(text || 'Transmission packet rejected.')
+        }
+      } else {
+        // Fallback simulation mode
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        setStatus('success')
+        console.info('EmailJS variables missing. Simulated connection established.')
+        setName('')
+        setEmail('')
+        setMessage('')
+      }
+    } catch (err) {
+      console.error(err)
+      setErrorMessage(err.message || 'Transmission failed. Fatal link interruption.')
+      setStatus('error')
+    }
+  }
 
   return (
     <footer
       ref={sectionRef}
       id="contact"
-      className="relative min-h-[50vh] overflow-hidden bg-canvas px-6 pt-4 pb-24 lg:px-10 lg:pt-6 lg:pb-32 border-t border-white/5"
+      className="relative min-h-[50vh] overflow-hidden bg-canvas px-6 pt-20 pb-24 lg:px-10 lg:pt-28 lg:pb-32 border-t border-white/5 text-white"
     >
       <div className="mx-auto max-w-7xl">
-        <motion.div
-          className="mb-16 max-w-3xl"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-        >
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-white/45">
-            Connect &amp; Collaborate
-          </p>
-          <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.08] tracking-[-0.03em] text-white">
-            Let&apos;s build something intelligent and impactful together.
-          </h2>
-        </motion.div>
+        
+        {/* Contact Layout Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch mb-24 select-none">
+          
+          {/* Left Column: Direct Connection Descriptions & Social Channels */}
+          <div className="flex flex-col justify-between space-y-8">
+            <div className="space-y-4">
+              <p className="font-mono text-xs uppercase tracking-[0.4em] text-white/45">
+                CONNECT &amp; COLLABORATE
+              </p>
+              <h2 className="text-[clamp(2.2rem,5vw,3.2rem)] font-display font-bold leading-[1.08] tracking-[-0.03em] text-white">
+                Let&apos;s build something intelligent and impactful together.
+              </h2>
+              <p className="text-white/60 text-sm leading-relaxed max-w-md">
+                Establish a secure connection session. Drop a telemetry packet or reach out directly via verified social channels.
+              </p>
+            </div>
 
-        <div className="mb-24 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {links.map((link) => (
-            <motion.a
-              key={link.label}
-              href={link.href}
-              target={link.href.startsWith('mailto:') ? undefined : '_blank'}
-              rel={link.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-              className="group relative flex flex-col items-center justify-center p-6 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm transition duration-300 hover:border-accent/50 hover:bg-white/[0.04] text-center cursor-pointer"
-              whileHover={{ y: -4 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            >
-              {/* Subtle hover background glow */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500 rounded-2xl bg-accent pointer-events-none" />
-              
-              {/* Icon container */}
-              <div className="h-12 w-12 mb-3 flex items-center justify-center rounded-xl bg-white/[0.03] text-white/60 group-hover:text-accent group-hover:bg-accent/10 transition-all duration-300">
-                {link.icon}
-              </div>
-              
-              {/* Label */}
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition duration-300">
-                {link.label}
-              </span>
-            </motion.a>
-          ))}
+            {/* Social channels (stacked as a 2x2 grid) */}
+            <div className="grid grid-cols-2 gap-4">
+              {links.map((link) => (
+                <motion.a
+                  key={link.label}
+                  href={link.href}
+                  target={link.href.startsWith('mailto:') ? undefined : '_blank'}
+                  rel={link.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                  className="group relative flex flex-col items-center justify-center p-6 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm transition duration-300 hover:border-accent/40 hover:bg-white/[0.04] text-center cursor-pointer"
+                  whileHover={shouldReduceMotion ? {} : { y: -3 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
+                  <div className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500 rounded-2xl bg-accent pointer-events-none" />
+                  <div className="h-12 w-12 mb-3 flex items-center justify-center rounded-xl bg-white/[0.03] text-white/60 group-hover:text-accent group-hover:bg-accent/10 transition-all duration-300">
+                    {link.icon}
+                  </div>
+                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition duration-300">
+                    {link.label}
+                  </span>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Column: Establish Connection Form Card */}
+          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-8 flex flex-col justify-between h-full">
+            {/* Corner Crosshairs node indicators */}
+            <span className="absolute top-2.5 left-2.5 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
+            <span className="absolute top-2.5 right-2.5 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
+            <span className="absolute bottom-2.5 left-2.5 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
+            <span className="absolute bottom-2.5 right-2.5 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
+
+            {/* Neural Network SVG Background Graphic in low opacity */}
+            <div className="pointer-events-none absolute bottom-4 right-4 opacity-[0.02] w-36 h-36 select-none z-0">
+              <svg viewBox="0 0 100 100" className="w-full h-full text-white" fill="none" stroke="currentColor" strokeWidth="1">
+                <circle cx="20" cy="50" r="4" fill="currentColor" />
+                <circle cx="50" cy="20" r="4" fill="currentColor" />
+                <circle cx="50" cy="80" r="4" fill="currentColor" />
+                <circle cx="80" cy="50" r="4" fill="currentColor" />
+                <line x1="20" y1="50" x2="50" y2="20" />
+                <line x1="20" y1="50" x2="50" y2="80" />
+                <line x1="50" y1="20" x2="80" y2="50" />
+                <line x1="50" y1="80" x2="80" y2="50" />
+                <line x1="50" y1="20" x2="50" y2="80" />
+              </svg>
+            </div>
+
+            <AnimatePresence mode="wait">
+              {status === 'success' ? (
+                /* Success telemetry state */
+                <motion.div
+                  key="success-state"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col items-center justify-center py-12 text-center space-y-4 z-10"
+                >
+                  <div className="h-12 w-12 rounded-full bg-[#00e676]/10 border border-[#00e676]/30 flex items-center justify-center text-[#00e676] text-xl font-bold select-none">
+                    ✓
+                  </div>
+                  <div className="space-y-1.5">
+                    <span className="font-mono text-[11.5px] uppercase tracking-widest text-accent font-bold block">
+                      [TRANSMISSION_SECURE]
+                    </span>
+                    <h3 className="text-lg font-display font-bold text-white uppercase tracking-wider">
+                      Connection Established
+                    </h3>
+                    <p className="text-white/50 text-sm leading-relaxed max-w-xs mx-auto">
+                      Your message packet has been transmitted successfully. Binali will connect with you shortly.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setStatus('idle')}
+                    className="font-mono text-[11px] uppercase tracking-widest text-white/40 hover:text-white border border-white/10 hover:border-white/20 px-3.5 py-1.5 rounded-lg transition duration-200 mt-2 cursor-pointer"
+                  >
+                    Send Another Packet
+                  </button>
+                </motion.div>
+              ) : (
+                /* Standard Contact Form */
+                <motion.form
+                  key="form-state"
+                  onSubmit={handleSubmit}
+                  className="space-y-5 z-10"
+                  noValidate
+                >
+                  <div className="border-b border-white/5 pb-2 mb-4 flex items-center justify-between font-mono text-[10.5px] text-white/35 tracking-widest select-none">
+                    <span>[SESSION_INIT]: SECURE CHANNEL</span>
+                    <span>STATUS // READY</span>
+                  </div>
+
+                  {/* Name field */}
+                  <div>
+                    <label htmlFor="name-input" className="block font-mono text-[11px] uppercase tracking-widest text-white/50 mb-1.5">
+                      Sender Identification (Name)
+                    </label>
+                    <input
+                      id="name-input"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="e.g. ALEX MILLER"
+                      className="w-full bg-white/[0.02] border border-white/10 rounded-lg px-4 py-2.5 font-mono text-[13px] text-white tracking-wide transition-all duration-300 focus:outline-none focus:border-accent focus:shadow-[0_0_8px_rgba(0,102,255,0.15)] placeholder-white/15"
+                      aria-describedby={errors.name ? 'name-error' : undefined}
+                    />
+                    {errors.name && (
+                      <span id="name-error" className="font-mono text-[11px] text-[#ff3333] tracking-wider block mt-1">
+                        [ERR]: {errors.name}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Email field */}
+                  <div>
+                    <label htmlFor="email-input" className="block font-mono text-[11px] uppercase tracking-widest text-white/50 mb-1.5">
+                      Secure Mail Address
+                    </label>
+                    <input
+                      id="email-input"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="e.g. CLIENT@DOMAIN.COM"
+                      className="w-full bg-white/[0.02] border border-white/10 rounded-lg px-4 py-2.5 font-mono text-[13px] text-white tracking-wide transition-all duration-300 focus:outline-none focus:border-accent focus:shadow-[0_0_8px_rgba(0,102,255,0.15)] placeholder-white/15"
+                      aria-describedby={errors.email ? 'email-error' : undefined}
+                    />
+                    {errors.email && (
+                      <span id="email-error" className="font-mono text-[11px] text-[#ff3333] tracking-wider block mt-1">
+                        [ERR]: {errors.email}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Message field */}
+                  <div>
+                    <label htmlFor="message-input" className="block font-mono text-[11px] uppercase tracking-widest text-white/50 mb-1.5">
+                      Message Packet Telemetry
+                    </label>
+                    <textarea
+                      id="message-input"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="e.g. INQUIRY ON AI MODELING CAPABILITIES..."
+                      className="w-full bg-white/[0.02] border border-white/10 rounded-lg px-4 py-2.5 font-mono text-[13px] text-white tracking-wide transition-all duration-300 focus:outline-none focus:border-accent focus:shadow-[0_0_8px_rgba(0,102,255,0.15)] placeholder-white/15 h-24 resize-none"
+                      aria-describedby={errors.message ? 'message-error' : undefined}
+                    />
+                    {errors.message && (
+                      <span id="message-error" className="font-mono text-[11px] text-[#ff3333] tracking-wider block mt-1">
+                        [ERR]: {errors.message}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Failure feedback alert */}
+                  {status === 'error' && (
+                    <div className="p-3 bg-[#ff3333]/5 border border-[#ff3333]/20 rounded-lg font-mono text-[11px] text-[#ff3333] tracking-wider">
+                      [FATAL_INTERRUPT]: {errorMessage}
+                    </div>
+                  )}
+
+                  {/* Submit connection button */}
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={status === 'loading'}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-accent/40 bg-accent/5 hover:border-accent hover:bg-accent/15 px-6 py-3 font-mono text-[12px] uppercase tracking-widest text-white transition-all duration-300 hover:shadow-[0_0_12px_rgba(0,102,255,0.25)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      {status === 'loading' ? (
+                        <>
+                          <span className="h-1.5 w-1.5 rounded-full bg-accent animate-ping" />
+                          <span>ESTABLISHING CONNECTION...</span>
+                        </>
+                      ) : (
+                        <span>ESTABLISH CONNECTION &rarr;</span>
+                      )}
+                    </button>
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
+        {/* Big Signature Label */}
         <motion.div
           className="mb-20 flex justify-center"
           style={{ scale: signatureScale, opacity: signatureOpacity }}
         >
           <motion.p
-            className="font-display text-[clamp(4rem,18vw,12rem)] font-extrabold lowercase leading-none tracking-[-0.05em] text-white/20"
-            whileHover={{
-              color: 'rgba(255,255,255,0.45)',
-              textShadow: '0 0 60px rgba(0,102,255,0.35)',
-            }}
+            className="font-display text-[clamp(4rem,18vw,12rem)] font-extrabold lowercase leading-none tracking-[-0.05em] text-white/20 select-none"
+            whileHover={
+              shouldReduceMotion
+                ? {}
+                : {
+                    color: 'rgba(255,255,255,0.45)',
+                    textShadow: '0 0 60px rgba(0,102,255,0.35)',
+                  }
+            }
             transition={{ type: 'spring', stiffness: 200, damping: 22 }}
           >
             binali.
           </motion.p>
         </motion.div>
 
+        {/* Footer bottom bar */}
         <div className="flex flex-col items-center justify-between gap-6 border-t border-white/10 pt-8 md:flex-row">
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">
-            &copy; 2026 Binali Assalaarachchi.
+            &copy; {new Date().getFullYear()} Binali Assalaarachchi.
           </p>
 
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">

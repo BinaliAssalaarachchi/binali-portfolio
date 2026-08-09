@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion'
 import { useRef } from 'react'
 
 const passes = [
@@ -33,6 +33,8 @@ const CURVE_PATH =
 
 export default function ProcessTimeline() {
   const sectionRef = useRef(null)
+  const shouldReduceMotion = useReducedMotion()
+  
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start 0.2', 'end 0.85'],
@@ -51,37 +53,39 @@ export default function ProcessTimeline() {
       <div className="relative mx-auto max-w-6xl">
         <motion.div
           className="mb-20 max-w-3xl"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: shouldReduceMotion ? 0.2 : 0.7 }}
         >
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-white/40">
             How I Build
           </p>
-          <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.08] tracking-[-0.03em] text-white">
+          <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-display font-bold leading-[1.08] tracking-[-0.03em] text-white">
             Driving complex engineering pipelines from database design to deployment.
           </h2>
         </motion.div>
 
         <div className="relative min-h-[1100px]">
-          <svg
-            className="pointer-events-none absolute left-1/2 top-0 hidden h-full w-full max-w-2xl -translate-x-1/2 lg:block"
-            viewBox="0 0 600 1100"
-            fill="none"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <motion.path
-              d={CURVE_PATH}
-              stroke="var(--color-accent)"
-              strokeOpacity="0.3"
-              strokeWidth="2"
-              strokeDasharray="8 10"
+          {!shouldReduceMotion && (
+            <svg
+              className="pointer-events-none absolute left-1/2 top-0 hidden h-full w-full max-w-2xl -translate-x-1/2 lg:block"
+              viewBox="0 0 600 1100"
               fill="none"
-              style={{ pathLength }}
-            />
-          </svg>
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <motion.path
+                d={CURVE_PATH}
+                stroke="var(--color-accent)"
+                strokeOpacity="0.3"
+                strokeWidth="2"
+                strokeDasharray="8 10"
+                fill="none"
+                style={{ pathLength }}
+              />
+            </svg>
+          )}
 
           <div className="relative space-y-24 lg:space-y-32">
             {passes.map((pass, index) => (
@@ -90,6 +94,7 @@ export default function ProcessTimeline() {
                 pass={pass}
                 index={index}
                 scrollYProgress={scrollYProgress}
+                shouldReduceMotion={shouldReduceMotion}
               />
             ))}
           </div>
@@ -99,7 +104,7 @@ export default function ProcessTimeline() {
   )
 }
 
-function PassCard({ pass, index, scrollYProgress }) {
+function PassCard({ pass, index, scrollYProgress, shouldReduceMotion }) {
   const start = index * 0.18
   const end = start + 0.22
   const cardProgress = useTransform(scrollYProgress, [start, end], [0, 1])
@@ -117,19 +122,19 @@ function PassCard({ pass, index, scrollYProgress }) {
   return (
     <motion.div
       className={`relative flex ${pass.side === 'left' ? 'lg:justify-start' : 'lg:justify-end'}`}
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.7, delay: index * 0.05 }}
+      transition={{ duration: shouldReduceMotion ? 0.25 : 0.7, delay: shouldReduceMotion ? 0 : index * 0.05 }}
     >
       <motion.article
         className="relative w-full max-w-md rounded-2xl border p-8 lg:w-[46%] backdrop-blur-sm shadow-md"
-        style={{ backgroundColor, borderColor, color, boxShadow }}
+        style={shouldReduceMotion ? { backgroundColor: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' } : { backgroundColor, borderColor, color, boxShadow }}
       >
         <p className="mb-3 font-mono text-xs uppercase tracking-[0.35em] opacity-60">
           Pass {pass.id}
         </p>
-        <h3 className="mb-3 text-2xl font-bold tracking-[-0.02em]">{pass.title}</h3>
+        <h3 className="mb-3 text-2xl font-display font-bold tracking-[-0.02em]">{pass.title}</h3>
         <p className="text-sm leading-relaxed opacity-80">{pass.body}</p>
       </motion.article>
     </motion.div>

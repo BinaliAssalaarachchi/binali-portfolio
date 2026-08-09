@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useState, useRef } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import pythonIcon from '../assets/python.png'
 import javascriptIcon from '../assets/javascript.png'
 import cIcon from '../assets/c.png'
@@ -125,7 +126,7 @@ const technologies = [
     color: '#4DABCF',
     icon: <img src={numpyIcon} alt="NumPy" className="h-12 w-12 object-contain" />,
   },
-      {
+  {
     name: 'Matplotlib',
     color: '#11557C',
     icon: <img src={matplotlibIcon} alt="Matplotlib" className="h-12 w-12 object-contain" />,
@@ -133,10 +134,14 @@ const technologies = [
 ]
 
 export default function TechStack() {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
-    <section id="tech-stack" className="relative overflow-hidden bg-canvas px-6 pt-4 pb-4 lg:px-10 lg:pt-6 lg:pb-6">
+    <section id="tech-stack" className="relative overflow-hidden bg-canvas px-6 py-20 lg:px-10 lg:py-28 border-t border-white/5">
       {/* Dynamic Background Grid and Glows */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background-image:linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:60px_60px]" />
+      {!shouldReduceMotion && (
+        <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(255, 255, 255, 0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255, 255, 255, 0.7)_1px,transparent_1px)] [background-size:60px_60px]" />
+      )}
       
       <div className="absolute -left-1/4 top-1/4 h-96 w-96 rounded-full bg-accent/5 blur-[120px] pointer-events-none" />
       <div className="absolute -right-1/4 bottom-1/4 h-96 w-96 rounded-full bg-accent/5 blur-[120px] pointer-events-none" />
@@ -144,62 +149,91 @@ export default function TechStack() {
       <div className="relative mx-auto max-w-7xl">
         <motion.div
           className="mb-16 max-w-3xl"
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: shouldReduceMotion ? 0.2 : 0.7 }}
         >
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-white/45">
-            Technical Toolkit
+            TECHNICAL TOOLKIT
           </p>
-          <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.08] tracking-[-0.03em] text-white">
+          <h2 className="text-[clamp(2.2rem,5vw,3.5rem)] font-display font-bold leading-[1.08] tracking-[-0.03em] text-white">
             Developing responsive systems across full-stack applications and intelligent AI pipelines.
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        {/* Dashboard Grid of Tech Cards */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 items-stretch">
           {technologies.map((tech, index) => (
-            <motion.div
+            <TechCard
               key={tech.name}
-              className="relative group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm aspect-square select-none text-center"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-20px' }}
-              transition={{ duration: 0.5, delay: index * 0.03 }}
-              whileHover={{ scale: 1.05, y: -4 }}
-            >
-              {/* Radial Brand Glow */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500 rounded-2xl pointer-events-none"
-                style={{
-                  background: `radial-gradient(circle at center, ${tech.color} 0%, transparent 70%)`
-                }}
-              />
-
-              {/* Glowing Outline */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-500 rounded-2xl border border-transparent pointer-events-none"
-                style={{
-                  borderColor: tech.color,
-                  boxShadow: `0 0 20px ${tech.color}55`
-                }}
-              />
-
-              {/* Tech Icon Container */}
-              <div 
-                className="h-14 w-14 mb-4 flex items-center justify-center text-white/70 group-hover:text-white transition duration-300"
-              >
-                {tech.icon}
-              </div>
-
-              {/* Tech Name Label */}
-              <span className="font-mono text-[10px] uppercase tracking-widest text-white/40 group-hover:text-white/90 transition duration-300">
-                {tech.name}
-              </span>
-            </motion.div>
+              tech={tech}
+              index={index}
+              shouldReduceMotion={shouldReduceMotion}
+            />
           ))}
         </div>
       </div>
     </section>
+  )
+}
+
+function TechCard({ tech, index, shouldReduceMotion }) {
+  const cardRef = useRef(null)
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [isHovered, setIsHovered] = useState(false)
+
+  const handleMouseMove = (e) => {
+    if (shouldReduceMotion || !cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    })
+  }
+
+  return (
+    <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative flex flex-col items-center justify-center p-6 rounded-2xl border transition-all duration-300 aspect-square select-none text-center bg-white/[0.02]"
+      style={{
+        borderColor: isHovered ? `${tech.color}80` : 'rgba(255, 255, 255, 0.1)',
+        boxShadow: isHovered ? `0 0 12px ${tech.color}22` : 'none',
+        background: isHovered && !shouldReduceMotion
+          ? `radial-gradient(110px circle at ${mousePos.x}px ${mousePos.y}px, ${tech.color}15, transparent 80%)`
+          : 'rgba(255, 255, 255, 0.02)'
+      }}
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-20px' }}
+      transition={{ duration: shouldReduceMotion ? 0.25 : 0.5, delay: shouldReduceMotion ? 0 : index * 0.03 }}
+    >
+      {/* Corner crosshairs node indicators */}
+      <span className="absolute top-2.5 left-2.5 font-mono text-[8px] text-white/15 pointer-events-none select-none pointer-events-none">+</span>
+      <span className="absolute top-2.5 right-2.5 font-mono text-[8px] text-white/15 pointer-events-none select-none pointer-events-none">+</span>
+      <span className="absolute bottom-2.5 left-2.5 font-mono text-[8px] text-white/15 pointer-events-none select-none pointer-events-none">+</span>
+      <span className="absolute bottom-2.5 right-2.5 font-mono text-[8px] text-white/15 pointer-events-none select-none pointer-events-none">+</span>
+
+      {/* Tech Icon Container */}
+      <div 
+        className="h-14 w-14 mb-4 flex items-center justify-center transition duration-300"
+        style={{
+          transform: isHovered && !shouldReduceMotion ? 'scale(1.05)' : 'scale(1)',
+          transition: 'transform 0.3s ease'
+        }}
+      >
+        {tech.icon}
+      </div>
+
+      {/* Tech Name Label */}
+      <span className={`font-mono text-[11px] uppercase tracking-widest transition-colors duration-300 ${
+        isHovered ? 'text-white font-semibold' : 'text-white/40'
+      }`}>
+        {tech.name}
+      </span>
+    </motion.div>
   )
 }

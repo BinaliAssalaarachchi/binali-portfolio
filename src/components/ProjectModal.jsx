@@ -1,8 +1,9 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
 export default function ProjectModal({ project, onClose }) {
   const [activeImage, setActiveImage] = useState(project?.image)
+  const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
     if (project) setActiveImage(project.image)
@@ -44,10 +45,10 @@ export default function ProjectModal({ project, onClose }) {
           <motion.dialog
             open
             className="glass-panel relative z-10 m-0 flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-canvas/90 text-surface shadow-2xl"
-            initial={{ opacity: 0, y: 40, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 24, scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 40, scale: 0.96 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.98 }}
+            transition={shouldReduceMotion ? { duration: 0.25 } : { type: 'spring', stiffness: 320, damping: 28 }}
             aria-labelledby="project-modal-title"
           >
             <div className="grid max-h-[92vh] overflow-y-auto lg:grid-cols-2">
@@ -130,7 +131,7 @@ export default function ProjectModal({ project, onClose }) {
                 </p>
                 <h2
                   id="project-modal-title"
-                  className="mb-4 pr-16 text-2xl font-bold leading-tight tracking-[-0.02em] md:text-3xl"
+                  className="mb-4 pr-16 text-2xl font-display font-bold leading-tight tracking-[-0.02em] md:text-3xl"
                 >
                   {project.title}
                 </h2>
@@ -172,8 +173,8 @@ export default function ProjectModal({ project, onClose }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-auto inline-flex w-fit items-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white"
-                    whileHover={{ scale: 1.04, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+                    whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 22 }}
                   >
                     View Repository

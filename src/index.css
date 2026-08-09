@@ -9,6 +9,9 @@
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-display: 'Syne', 'Inter', sans-serif;
+  --font-size-xs: 0.8125rem;
+  --font-size-sm: 0.9375rem;
+  --font-size-base: 1.0625rem;
   --animate-rotate-slow: rotate-slow 12s linear infinite;
   --animate-scan: scan 3s ease-in-out infinite;
 }

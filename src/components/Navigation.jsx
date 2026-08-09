@@ -60,7 +60,7 @@ export default function Navigation() {
     }
 
     const observer = new IntersectionObserver(callback, {
-      rootMargin: '-30% 0px -50% 0px', // detects active when section occupies middle area
+      rootMargin: '-30% 0px -50% 0px',
       threshold: 0.1,
     })
 
@@ -141,41 +141,47 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Floating Hamburger Toggle Button */}
-      <motion.button
-        aria-label="Toggle navigation menu"
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-canvas/60 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-accent/40 hover:bg-canvas/80 focus:outline-none focus:ring-2 focus:ring-accent group"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5, duration: 0.5 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        {/* Pulsing ring in closed state */}
+      {/* Sleek corner toggle button when console sidebar is closed */}
+      <AnimatePresence>
         {!isOpen && (
-          <span className="absolute -inset-1 rounded-full bg-accent/5 opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-opacity duration-300 pointer-events-none" />
-        )}
-
-        <div className="relative flex h-6 w-6 flex-col justify-between items-center">
-          <motion.span
-            className="h-[2px] w-6 rounded bg-white origin-center"
-            animate={isOpen ? { rotate: 45, y: 11 } : { rotate: 0, y: 0 }}
-            transition={{ duration: 0.3 }}
-          />
-          <motion.span
-            className="h-[2px] w-6 rounded bg-white"
-            animate={isOpen ? { opacity: 0 } : { opacity: 1 }}
+          <motion.button
+            onClick={() => setIsOpen(true)}
+            className="fixed top-6 right-6 z-40 flex items-center gap-2 rounded-full border border-white/10 bg-canvas/60 backdrop-blur-md px-4.5 py-2 font-mono text-[9px] uppercase tracking-widest text-white/80 hover:text-white hover:border-accent/40 hover:bg-canvas/90 transition-all duration-300 shadow-[0_4px_24px_rgba(0,0,0,0.5)] cursor-pointer group"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-          />
-          <motion.span
-            className="h-[2px] w-6 rounded bg-white origin-center"
-            animate={isOpen ? { rotate: -45, y: -11 } : { rotate: 0, y: 0 }}
-            transition={{ duration: 0.3 }}
-          />
-        </div>
-      </motion.button>
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            aria-label="Open Navigation Console"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-accent relative flex">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75"></span>
+            </span>
+            <span>CONSOLE</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Sleek close toggle button when console sidebar is open */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.button
+            onClick={() => setIsOpen(false)}
+            className="fixed top-6 right-6 z-50 flex items-center gap-2 rounded-full border border-white/20 bg-canvas/80 backdrop-blur-md px-4.5 py-2 font-mono text-[9px] uppercase tracking-widest text-accent hover:text-accent/80 hover:border-accent/40 transition duration-250 cursor-pointer shadow-lg"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            aria-label="Close Navigation Console"
+          >
+            <div className="relative flex h-3 w-3 flex-col justify-between items-center py-[5px]">
+              <span className="h-[1.5px] w-3 rounded bg-accent rotate-45 absolute" />
+              <span className="h-[1.5px] w-3 rounded bg-accent -rotate-45 absolute" />
+            </div>
+            <span>CLOSE</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* Main Drawer Overlay */}
       <AnimatePresence>

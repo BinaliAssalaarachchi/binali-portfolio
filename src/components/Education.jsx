@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 
 const educationData = [
   {
@@ -39,80 +40,142 @@ const educationData = [
 ]
 
 export default function Education() {
+  const shouldReduceMotion = useReducedMotion()
+  const [hoveredIdx, setHoveredIdx] = useState(null)
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.08,
+      },
+    },
+  }
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 35 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+  }
+
   return (
-    <section id="education" className="bg-canvas px-6 pt-4 pb-4 lg:px-10 lg:pt-6 lg:pb-6 border-t border-white/5">
+    <section id="education" className="relative overflow-hidden bg-canvas px-6 py-20 lg:px-10 lg:py-28 text-white border-t border-white/5">
+      {/* Blueprint Grid Background */}
+      {!shouldReduceMotion && (
+        <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(255, 255, 255, 0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255, 255, 255, 0.7)_1px,transparent_1px)] [background-size:60px_60px]" />
+      )}
+
       <div className="mx-auto max-w-7xl">
+        
+        {/* Section Header */}
         <motion.div
           className="mb-16 max-w-3xl"
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: shouldReduceMotion ? 0.2 : 0.7 }}
         >
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-white/40">
-            Education
+            EDUCATION
           </p>
-          <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.08] tracking-[-0.03em] text-white">
-            Academic Background
+          <h2 className="text-[clamp(2.2rem,5vw,3.5rem)] font-display font-bold leading-[1.08] tracking-[-0.03em] text-white">
+            Academic Milestones
           </h2>
         </motion.div>
 
         {/* Timeline Layout */}
-        <div className="relative pl-8 md:pl-12 ml-2 md:ml-4">
-          {/* Vertical blue line */}
-          <div 
-            className="absolute left-0 top-3 bottom-3 w-[2px] bg-[#2E75B6]" 
-            style={{ boxShadow: '0 0 10px rgba(46, 117, 182, 0.4)' }}
-          />
+        <div className="relative pl-8 md:pl-12 ml-2 md:ml-4 select-none">
+          
+          {/* Vertical timeline line */}
+          <div className="absolute left-[7px] top-6 bottom-6 w-[1.5px] bg-white/10" />
 
-          <div className="space-y-12">
-            {educationData.map((item, index) => (
-              <motion.div
-                key={index}
-                className="relative"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.6, delay: index * 0.08 }}
-              >
-                {/* Timeline Dot Marker */}
-                <div 
-                  className="absolute -left-[39px] md:-left-[55px] top-6 h-4 w-4 rounded-full bg-[#2E75B6] border-[3px] border-[#060b1e] z-10" 
-                  style={{ boxShadow: '0 0 8px rgba(46, 117, 182, 0.6)' }}
-                />
+          <motion.div 
+            className="space-y-10"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-40px' }}
+          >
+            {educationData.map((item, index) => {
+              const isHovered = hoveredIdx === index
 
-                {/* Glassmorphic Card */}
+              return (
                 <motion.div
-                  className="rounded-[24px] border border-white/10 bg-white/5 backdrop-blur-sm p-6 md:p-8 relative overflow-hidden"
-                  whileHover={{ y: -4 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  key={index}
+                  className="relative"
+                  variants={cardVariants}
+                  onMouseEnter={() => setHoveredIdx(index)}
+                  onMouseLeave={() => setHoveredIdx(null)}
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                    <div className="space-y-2">
-                      <h3 className="text-xl md:text-2xl font-bold leading-snug tracking-tight text-white">
-                        {item.degree}
-                      </h3>
-                      {item.institution && (
-                        <p className="text-[#2E75B6] font-semibold text-sm md:text-base">
-                          {item.institution}
-                        </p>
-                      )}
-                      {item.details && (
-                        <p className="text-white/60 text-sm leading-relaxed mt-4 border-t border-white/5 pt-3">
-                          {item.details}
-                        </p>
-                      )}
+                  {/* Timeline Dot Node */}
+                  <div 
+                    className={`absolute -left-[32px] md:-left-[48px] top-7 w-3 h-3 rounded-full border transition-all duration-300 z-10 ${
+                      isHovered
+                        ? 'bg-accent border-accent shadow-[0_0_10px_var(--color-accent)] scale-125'
+                        : 'bg-canvas border-white/35 scale-100'
+                    }`}
+                  />
+                  {/* Pulsing Node Halo on Hover */}
+                  {isHovered && !shouldReduceMotion && (
+                    <span className="absolute -left-[36px] md:-left-[52px] top-[24px] w-5 h-5 rounded-full bg-accent/20 animate-ping z-0 pointer-events-none" />
+                  )}
+
+                  {/* Glassmorphic Milestone Card */}
+                  <motion.div
+                    className={`rounded-2xl border bg-white/[0.02] backdrop-blur-sm p-6 md:p-8 relative overflow-hidden transition-all duration-300 ${
+                      isHovered ? 'border-accent/40 bg-white/[0.04]' : 'border-white/10'
+                    }`}
+                    animate={isHovered && !shouldReduceMotion ? { x: 4, y: -2 } : { x: 0, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  >
+                    {/* Corner Crosshairs node decorations */}
+                    <span className="absolute top-2 left-2 font-mono text-[8px] text-white/15 pointer-events-none select-none">+</span>
+                    <span className="absolute top-2 right-2 font-mono text-[8px] text-white/15 pointer-events-none select-none">+</span>
+                    <span className="absolute bottom-2 left-2 font-mono text-[8px] text-white/15 pointer-events-none select-none">+</span>
+                    <span className="absolute bottom-2 right-2 font-mono text-[8px] text-white/15 pointer-events-none select-none">+</span>
+
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 relative z-10">
+                      <div className="space-y-2">
+                        <h3 className={`text-lg md:text-xl font-display font-bold leading-snug tracking-tight transition-colors duration-300 ${
+                          isHovered ? 'text-accent' : 'text-white'
+                        }`}>
+                          {item.degree}
+                        </h3>
+                        {item.institution && (
+                          <p className="text-white/60 font-mono text-xs tracking-wider">
+                            {item.institution}
+                          </p>
+                        )}
+                        {item.details && (
+                          <p className="text-white/50 text-sm leading-relaxed mt-4 border-t border-white/5 pt-3">
+                            {item.details}
+                          </p>
+                        )}
+                      </div>
+                      
+                      {/* Technical Date Label */}
+                      <div className="shrink-0 sm:text-right">
+                        <span className={`font-mono text-[9.5px] uppercase tracking-widest border px-3 py-1.5 rounded-lg inline-block transition-colors duration-300 ${
+                          isHovered 
+                            ? 'text-accent border-accent/25 bg-accent/5' 
+                            : 'text-white/40 border-white/10 bg-white/5'
+                        }`}>
+                          [ {item.period} ]
+                        </span>
+                      </div>
                     </div>
-                    <div className="shrink-0 sm:text-right">
-                      <span className="font-mono text-xs md:text-sm text-white/50 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg inline-block">
-                        {item.period}
-                      </span>
-                    </div>
-                  </div>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            ))}
-          </div>
+              )
+            })}
+          </motion.div>
         </div>
       </div>
     </section>

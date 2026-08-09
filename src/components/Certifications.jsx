@@ -1,10 +1,11 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 
 const achievementsData = [
   {
     emoji: '📊',
-    title: 'Deloitte Australia Data Analytics Job Simulation (Forage)',
+    title: 'Deloitte Australia Data Analytics Job Simulation',
+    issuer: 'Deloitte Australia • Forage',
     period: 'Jul 2026',
     description: 'Completed a job simulation involving data analysis, forensic technology, Tableau dashboard creation, and Excel-based data classification and business insights generation.',
     credentialUrl: 'https://www.theforage.com/completion-certificates/9PBTqmSxAf6zZTseP/io9DzWKe3PTsiS6GG_9PBTqmSxAf6zZTseP_6a45d9aa396e836fd6859389_1782965760707_completion_certificate.pdf',
@@ -12,7 +13,8 @@ const achievementsData = [
   },
   {
     emoji: '🤖',
-    title: 'AI Skills Fest 2026 — Microsoft',
+    title: 'AI Skills Fest 2026',
+    issuer: 'Microsoft',
     period: 'Jun 2026',
     description: 'Credential verified on Credly',
     credentialUrl: 'https://www.credly.com/badges/b244660b-8616-403e-adde-b3c330fbbb3c/public_url',
@@ -21,6 +23,7 @@ const achievementsData = [
   {
     emoji: '🏆',
     title: "SLIIT Faculty of Computing Dean's List",
+    issuer: 'Sri Lanka Institute of Information Technology',
     period: 'Year 1 Semester 2',
     description: 'Academic recognition for outstanding performance.',
     image: '/certificates/sliit_deans_list.jpg',
@@ -28,158 +31,225 @@ const achievementsData = [
   {
     emoji: '🎯',
     title: 'ACCA Escape the Challenge',
+    issuer: 'Association of Chartered Certified Accountants',
     period: '2022',
     description: 'Special Recognition & Participation Award.',
   },
   {
     emoji: '🥉',
     title: 'Advertisement Competition — Commerce Day',
-    period: 'Royal College',
+    issuer: 'Royal College Commerce Day',
+    period: '2021',
     description: 'Awarded 3rd Place.',
   },
   {
     emoji: '📣',
-    title: 'Emerging Marketer — Legacy 2025 (AIESEC in SLIIT)',
-    period: 'Nominee',
-    description: 'Recognized for marketing contribution and campaign excellence.',
+    title: 'Emerging Marketer — Legacy 2025',
+    issuer: 'AIESEC in SLIIT',
+    period: '2025',
+    description: 'Nominee for marketing contribution and campaign excellence.',
   },
   {
     emoji: '🇬🇧',
     title: 'British Council Key English Test (KET)',
+    issuer: 'British Council',
     period: '2016',
     description: 'Pass with Merit',
   },
   {
     emoji: '🎤',
-    title: 'English & Communication Certifications (CALSDA)',
-    period: 'Speech, Drama & Communication Skills',
+    title: 'English & Communication Certifications',
+    issuer: 'CALSDA',
+    period: '2015',
     description: 'Certified in public speaking, dramatic performances, and interpersonal communications.',
   },
 ]
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-}
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 24 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-}
-
 export default function Certifications() {
   const [selectedCert, setSelectedCert] = useState(null)
+  const [hoveredIdx, setHoveredIdx] = useState(null)
+  const shouldReduceMotion = useReducedMotion()
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.08,
+      },
+    },
+  }
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 24 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+  }
 
   return (
-    <section id="achievements" className="bg-canvas px-6 pt-4 pb-4 lg:px-10 lg:pt-6 lg:pb-6 border-t border-white/5">
+    <section id="achievements" className="relative overflow-hidden bg-canvas px-6 py-20 lg:px-10 lg:py-28 text-white border-t border-white/5">
+      {/* Background blueprint grid */}
+      {!shouldReduceMotion && (
+        <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(255, 255, 255, 0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255, 255, 255, 0.7)_1px,transparent_1px)] [background-size:60px_60px]" />
+      )}
+
       <div className="mx-auto max-w-7xl">
+        
+        {/* Section Header */}
         <motion.div
           className="mb-16 max-w-3xl"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial="hidden"
+          whileInView="show"
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          variants={{
+            hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 24 },
+            show: { opacity: 1, y: 0 }
+          }}
+          transition={{ duration: shouldReduceMotion ? 0.2 : 0.7 }}
         >
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-white/40">
-            Achievements
+            ACHIEVEMENTS
           </p>
-          <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.08] tracking-[-0.03em] text-white">
+          <h2 className="text-[clamp(2.2rem,5vw,3.5rem)] font-display font-bold leading-[1.08] tracking-[-0.03em] text-white">
             Certifications &amp; Achievements
           </h2>
         </motion.div>
 
+        {/* Dashboard Grid of Cards */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-40px' }}
-          className="grid gap-6 md:grid-cols-2"
+          className="grid gap-6 md:grid-cols-2 items-stretch select-none"
         >
-          {achievementsData.map((item, index) => (
-            <motion.div
-              key={index}
-              variants={cardVariants}
-              className="group relative overflow-hidden rounded-[24px] border border-white/10 bg-white/5 backdrop-blur-sm p-6 md:p-8 flex items-start gap-4"
-              whileHover={{ y: -4 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            >
-              {/* Emoji/Icon container */}
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#2E75B6]/10 border border-[#2E75B6]/20 text-2xl">
-                {item.emoji}
-              </div>
+          {achievementsData.map((item, index) => {
+            const isHovered = hoveredIdx === index
 
-              {/* Title & description */}
-              <div className="flex-1 space-y-2">
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
-                  <h3 className="text-lg font-bold leading-snug text-white group-hover:text-[#2E75B6] transition-colors duration-300">
-                    {item.title}
-                  </h3>
-                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-white/40 sm:text-right mt-0.5">
-                    {item.period}
-                  </span>
+            return (
+              <motion.div
+                key={index}
+                variants={cardVariants}
+                onMouseEnter={() => setHoveredIdx(index)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                className="group relative overflow-hidden rounded-2xl border bg-white/[0.02] backdrop-blur-sm p-6 md:p-8 flex items-start gap-4 transition-all duration-300"
+                style={{
+                  borderColor: isHovered ? 'var(--color-accent)' : 'rgba(255, 255, 255, 0.1)',
+                  boxShadow: isHovered ? '0 8px 24px rgba(0, 102, 255, 0.05)' : 'none',
+                  transform: isHovered && !shouldReduceMotion ? 'translateY(-4px)' : 'translateY(0px)'
+                }}
+              >
+                {/* Corner Crosshairs node decorations */}
+                <span className="absolute top-2.5 left-2.5 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
+                <span className="absolute top-2.5 right-2.5 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
+                <span className="absolute bottom-2.5 left-2.5 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
+                <span className="absolute bottom-2.5 right-2.5 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
+
+                {/* Emoji/Icon container */}
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/[0.03] border border-white/10 text-2xl transition duration-300 group-hover:bg-accent/10 group-hover:border-accent/40 z-10">
+                  {item.emoji}
                 </div>
-                <p className="text-white/60 text-sm leading-relaxed">
-                  {item.description}
-                </p>
-                
-                <div className="flex flex-wrap items-center gap-4">
-                  {item.credentialUrl && (
-                    <div className="pt-1">
+
+                {/* Title & description */}
+                <div className="flex-1 space-y-3 relative z-10">
+                  
+                  {/* Top verified system tag */}
+                  <div className="flex items-center justify-between font-mono text-[10px] tracking-wider select-none border-b border-white/5 pb-2">
+                    <div className="flex items-center gap-1.5 font-bold text-[#00e676]">
+                      <span className={`h-1.5 w-1.5 rounded-full ${
+                        isHovered ? 'bg-[#00e676] animate-pulse shadow-[0_0_6px_#00e676]' : 'bg-[#00e676]/65'
+                      } transition-all duration-300`} />
+                      <span>VERIFIED_ACHIEVEMENT</span>
+                    </div>
+                    <span className="text-white/35 uppercase text-[10px]">[ID_ACH // 0{index + 1}]</span>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
+                    <h3 className={`text-[16px] md:text-lg font-display font-bold leading-snug transition-colors duration-300 ${
+                      isHovered ? 'text-accent' : 'text-white'
+                    }`}>
+                      {item.title}
+                    </h3>
+                  </div>
+
+                  <div className="flex flex-col gap-0.5 font-mono text-[11.5px] text-white/45">
+                    {item.issuer && (
+                      <span className="font-semibold uppercase tracking-wider">
+                        Issuer: {item.issuer}
+                      </span>
+                    )}
+                    <span>
+                      Date: {item.period}
+                    </span>
+                  </div>
+
+                  <p className="text-white/60 text-sm leading-relaxed">
+                    {item.description}
+                  </p>
+                  
+                  {/* Bottom Action Section */}
+                  <div className="flex flex-wrap items-center justify-between pt-2">
+                    {item.credentialUrl ? (
                       <a
                         href={item.credentialUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2E75B6] hover:text-[#2E75B6]/80 hover:underline transition-colors"
+                        className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-accent group-hover:text-white transition duration-250 font-bold"
                       >
-                        <span>Verify Credential</span>
-                        <span>&rarr;</span>
+                        <span>View Credential</span>
+                        <span className={`inline-block transition-transform duration-250 ${
+                          isHovered && !shouldReduceMotion ? 'translate-x-1.5' : 'translate-x-0'
+                        }`}>
+                          &rarr;
+                        </span>
                       </a>
+                    ) : (
+                      <span className="font-mono text-[11px] uppercase tracking-widest text-white/20">
+                        Verification Only
+                      </span>
+                    )}
+                  </div>
+
+                  {item.image && (
+                    <div 
+                      className="mt-3 relative overflow-hidden rounded-xl border border-white/10 bg-black/30 aspect-[16/10] max-w-[260px] cursor-zoom-in group/img transition-all hover:border-accent/40" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedCert(item);
+                      }}
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-contain p-1 transition duration-500 group-hover/img:scale-105"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          if (e.currentTarget.nextElementSibling) {
+                            e.currentTarget.nextElementSibling.style.display = 'flex';
+                          }
+                        }}
+                      />
+                      <div className="absolute inset-0 hidden flex-col items-center justify-center p-3 text-center bg-white/5 font-mono text-[11.5px] text-white/40">
+                        <span>Preview Certificate</span>
+                        <span className="text-[9.5px] mt-1 text-white/20">(Add to public{item.image})</span>
+                      </div>
+                      <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition duration-300">
+                        <span className="text-white text-[11.5px] font-semibold tracking-wider uppercase bg-white/10 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">
+                          View Image
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
-
-                {item.image && (
-                  <div 
-                    className="mt-3 relative overflow-hidden rounded-xl border border-white/10 bg-black/30 aspect-[16/10] max-w-[260px] cursor-zoom-in group/img transition-all hover:border-[#2E75B6]/50" 
-                    onClick={() => setSelectedCert(item)}
-                  >
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-contain p-1 transition duration-500 group-hover/img:scale-105"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        if (e.currentTarget.nextElementSibling) {
-                          e.currentTarget.nextElementSibling.style.display = 'flex';
-                        }
-                      }}
-                    />
-                    <div className="absolute inset-0 hidden flex-col items-center justify-center p-3 text-center bg-white/5 font-mono text-[10px] text-white/40">
-                      <span>Preview Certificate</span>
-                      <span className="text-[8px] mt-1 text-white/20">(Add to public{item.image})</span>
-                    </div>
-                    <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition duration-300">
-                      <span className="text-white text-[10px] font-semibold tracking-wider uppercase bg-white/10 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">
-                        View Image
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            )
+          })}
         </motion.div>
       </div>
 
@@ -204,10 +274,10 @@ export default function Certifications() {
             {/* Modal Content */}
             <motion.div
               className="relative z-10 max-h-[85vh] max-w-4xl overflow-hidden rounded-xl border border-white/10 bg-canvas p-2 shadow-2xl flex flex-col items-center"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.95, opacity: 0 }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { scale: 0.95, opacity: 0 }}
+              transition={shouldReduceMotion ? { duration: 0.2 } : { type: 'spring', damping: 25, stiffness: 350 }}
             >
               {/* Close Button */}
               <button
