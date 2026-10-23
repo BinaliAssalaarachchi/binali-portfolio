@@ -24,10 +24,10 @@ export default function Hero() {
     >
       <motion.div
         style={{ y: bgY }}
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 motorsport-grid"
         aria-hidden="true"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,102,255,0.15),transparent_45%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,161,156,0.14),transparent_45%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(255,255,255,0.04),transparent_40%)]" />
         <div className="absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(255,255,255,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.8)_1px,transparent_1px)] [background-size:80px_80px]" />
       </motion.div>
@@ -89,7 +89,7 @@ export default function Hero() {
             >
               <motion.a
                 href="#projects"
-                className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 hover:border-accent hover:bg-accent/10 px-8 py-3.5 text-sm font-semibold tracking-wide text-white transition-all duration-300 hover:shadow-[0_0_12px_rgba(0,102,255,0.25)] focus:outline-none cursor-pointer group"
+                className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 hover:border-accent hover:bg-accent/10 px-8 py-3.5 text-sm font-semibold tracking-wide text-white transition-all duration-300 hover:shadow-[0_0_12px_rgba(0,161,156,0.25)] focus:outline-none cursor-pointer group"
                 whileHover="hover"
                 whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
               >
@@ -164,7 +164,7 @@ export default function Hero() {
                     e.currentTarget.src =
                       'data:image/svg+xml,' +
                       encodeURIComponent(
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750"><rect fill="#0066ff" width="600" height="750"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#111" font-family="sans-serif" font-size="24" font-weight="700">Add /me.jpg</text></svg>',
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750"><rect fill="#08090b" width="600" height="750"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#00a19c" font-family="sans-serif" font-size="24" font-weight="700">Add /me.jpg</text></svg>',
                       )
                   }}
                 />

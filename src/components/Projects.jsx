@@ -1,311 +1,48 @@
-import { useState, useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
+import { useState } from 'react'
 import { projects } from '../data/projects'
 import ProjectModal from './ProjectModal'
 
 export default function Projects() {
   const [selectedProject, setSelectedProject] = useState(null)
   const shouldReduceMotion = useReducedMotion()
+  const aiProjects = projects.filter((project) => project.category === 'ai')
+  const softwareProjects = projects.filter((project) => project.category === 'swe')
 
   return (
-    <section id="projects" className="relative overflow-hidden bg-canvas px-6 py-20 lg:px-10 lg:py-28 border-t border-white/5">
-      {/* Background blueprint grid */}
-      {!shouldReduceMotion && (
-        <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:60px_60px]" />
-      )}
-
-      <div className="mx-auto max-w-7xl">
-        
-        {/* Section Header */}
-        <motion.div
-          className="mb-16 max-w-3xl"
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: shouldReduceMotion ? 0.2 : 0.7 }}
-        >
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-white/40">
-            SELECTED WORK
-          </p>
-          <h2 className="text-[clamp(2.2rem,5vw,3.5rem)] font-display font-bold leading-[1.08] tracking-[-0.03em] text-white">
-            Engineering projects across AI, full-stack, and systems design.
-          </h2>
-        </motion.div>
-
-        <ProjectGroup
-          title="AI / ML PROJECTS"
-          projects={projects.filter((project) => project.category === 'ai')}
-          startIndex={0}
-          shouldReduceMotion={shouldReduceMotion}
-          onSelect={setSelectedProject}
-        />
-        <ProjectGroup
-          title="SOFTWARE ENGINEERING PROJECTS"
-          projects={projects.filter((project) => project.category === 'swe')}
-          startIndex={projects.filter((project) => project.category === 'ai').length}
-          shouldReduceMotion={shouldReduceMotion}
-          onSelect={setSelectedProject}
-        />
+    <section id="projects" data-chapter="02 // WORK" className="editorial-projects relative overflow-hidden px-6 py-28 lg:px-10 lg:py-40">
+      <div className="editorial-projects__wash" aria-hidden="true" />
+      <div className="relative z-10 mx-auto max-w-[92rem]">
+        <motion.header className="editorial-heading mb-24 grid gap-8 lg:grid-cols-[0.8fr_1.7fr] lg:items-end" initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}>
+          <div><p className="eyebrow">SELECTED WORK</p><span className="editorial-index">02</span></div>
+          <h2>Engineering projects across AI, full-stack, and systems design.</h2>
+        </motion.header>
+        <ProjectChapter label="AI / ML PROJECTS" projects={aiProjects} startIndex={0} onSelect={setSelectedProject} shouldReduceMotion={shouldReduceMotion} />
+        <ProjectChapter label="SOFTWARE ENGINEERING PROJECTS" projects={softwareProjects} startIndex={aiProjects.length} onSelect={setSelectedProject} shouldReduceMotion={shouldReduceMotion} />
       </div>
-
       <ProjectModal key={selectedProject?.id ?? 'closed'} project={selectedProject} onClose={() => setSelectedProject(null)} />
     </section>
   )
 }
 
-function ProjectGroup({ title, projects: groupProjects, startIndex, shouldReduceMotion, onSelect }) {
-  return (
-    <div className="mb-16 last:mb-0">
-      <div className="mb-7 flex items-center gap-4">
-        <h3 className="font-mono text-sm font-bold uppercase tracking-[0.25em] text-accent">{title}</h3>
-        <span className="h-px flex-1 bg-white/10" aria-hidden="true" />
-      </div>
-      <div className="grid items-stretch gap-8 md:grid-cols-2">
-        {groupProjects.map((project, index) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            index={startIndex + index}
-            shouldReduceMotion={shouldReduceMotion}
-            onSelect={() => onSelect(project)}
-          />
-        ))}
-      </div>
-    </div>
-  )
+function ProjectChapter({ label, projects: group, startIndex, onSelect, shouldReduceMotion }) {
+  return <div className="editorial-chapter"><div className="editorial-chapter__label"><span>{label}</span><i /></div><div className="editorial-project-list">
+    {group.map((project, index) => <EditorialProject key={project.id} project={project} index={startIndex + index} reverse={(startIndex + index) % 2 === 1} onSelect={() => onSelect(project)} shouldReduceMotion={shouldReduceMotion} />)}
+  </div></div>
 }
 
-function ProjectCard({ project, index, shouldReduceMotion, onSelect }) {
-  const cardRef = useRef(null)
-  const [tilt, setTilt] = useState({ x: 0, y: 0 })
-  const [isHovered, setIsHovered] = useState(false)
-
-  // 3D desktop tilt math (max 3 degrees)
-  const handleMouseMove = (e) => {
-    if (shouldReduceMotion || window.innerWidth < 1024 || !cardRef.current) return
-    const rect = cardRef.current.getBoundingClientRect()
-    const width = rect.width
-    const height = rect.height
-    
-    const mouseX = e.clientX - rect.left - width / 2
-    const mouseY = e.clientY - rect.top - height / 2
-    
-    const rotateX = -(mouseY / (height / 2)) * 3
-    const rotateY = (mouseX / (width / 2)) * 3
-    
-    setTilt({ x: rotateX, y: rotateY })
-  }
-
-  const handleMouseLeave = () => {
-    setIsHovered(false)
-    setTilt({ x: 0, y: 0 })
-  }
-
-  const isMobile = project.stack.some(tech => 
-    tech.toLowerCase().includes('flutter') || 
-    tech.toLowerCase().includes('react native')
-  )
-
-  const isContainOnly = project.id === 'heart-disease'
-
-  return (
-    <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      onClick={onSelect}
-      className="group relative overflow-hidden rounded-2xl border bg-white/[0.02] backdrop-blur-sm flex flex-col justify-between cursor-pointer h-full transition-all duration-300"
-      style={{
-        transform: isHovered && !shouldReduceMotion ? `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` : 'none',
-        transition: isHovered ? 'none' : 'transform 0.4s ease, border-color 0.3s ease, box-shadow 0.3s ease',
-        borderColor: isHovered ? 'var(--color-accent)' : 'rgba(255, 255, 255, 0.1)',
-        boxShadow: isHovered ? '0 10px 30px rgba(0, 102, 255, 0.06)' : 'none'
-      }}
-      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: shouldReduceMotion ? 0.25 : 0.6, delay: shouldReduceMotion ? 0 : index * 0.04 }}
-    >
-      {/* Corner crosshairs node indicators */}
-      <span className="absolute top-2 left-2 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
-      <span className="absolute top-2 right-2 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
-      <span className="absolute bottom-2 left-2 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
-      <span className="absolute bottom-2 right-2 font-mono text-[8px] text-white/20 select-none pointer-events-none">+</span>
-
-      {/* Mockup Frame Wrapper */}
-      {isMobile ? (
-        <div className="aspect-[16/10] flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#0c1328] to-[#121c3b] p-4 border-b border-white/5 relative select-none">
-          {/* Subtle blueprint grid */}
-          <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.8)_1px,transparent_1px)] bg-[size:16px_16px]" />
-          
-          {/* Phone Shell */}
-          <div className="relative aspect-[9/16] h-[92%] rounded-[20px] border-[3px] border-white/20 bg-black shadow-[0_12px_24px_rgba(0,0,0,0.6)] overflow-hidden flex flex-col justify-start">
-            {/* Notch */}
-            <div className="absolute top-1 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-20 flex items-center justify-center">
-              <div className="w-4 h-0.5 bg-white/20 rounded-full" />
-            </div>
-
-            {/* Subtle Scanning laser inside phone screen */}
-            {isHovered && !shouldReduceMotion && (
-              <div className="pointer-events-none absolute inset-x-0 h-[2.5px] bg-accent opacity-80 scan-line animate-scan z-20 shadow-[0_0_8px_var(--color-accent)]" />
-            )}
-            
-            {project.image ? <img
-              src={project.image}
-              alt={project.title}
-              className={`h-full w-full object-cover pt-3.5 transition-transform duration-500 ${
-                isHovered && !shouldReduceMotion ? 'scale-[1.04]' : 'scale-100'
-              }`}
-            /> : <ProjectPlaceholder title={project.title} compact />}
-          </div>
-        </div>
-      ) : (
-        <div className="aspect-[16/10] flex flex-col items-center justify-start overflow-hidden bg-gradient-to-br from-[#0c1328] to-[#121c3b] p-4 border-b border-white/5 relative select-none">
-          {/* Subtle blueprint grid */}
-          <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.8)_1px,transparent_1px)] bg-[size:16px_16px]" />
-
-          {/* Browser Shell */}
-          <div className="w-[96%] h-[90%] mt-1 rounded-t-xl border-t border-x border-white/15 bg-[#060b1e]/90 shadow-[0_12px_24px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden">
-            {/* Browser Header Bar */}
-            <div className="h-6 bg-white/5 border-b border-white/10 flex items-center px-3 gap-1 shrink-0 select-none">
-              <div className="h-1.5 w-1.5 rounded-full bg-[#ff5f56]" />
-              <div className="h-1.5 w-1.5 rounded-full bg-[#ffbd2e]" />
-              <div className="h-1.5 w-1.5 rounded-full bg-[#27c93f]" />
-              <div className="h-3 w-1/2 bg-white/5 rounded border border-white/5 mx-auto flex items-center justify-center">
-                <span className="text-[6px] text-white/20 font-mono tracking-tight truncate">localhost:3000</span>
-              </div>
-            </div>
-            
-            {/* Viewport */}
-            <div className={`flex-grow bg-black/40 overflow-hidden relative ${isContainOnly ? 'flex items-center justify-center p-3' : ''}`}>
-              {/* Ambient Blurred Backdrop for contained preview */}
-              {isContainOnly && (
-                <img
-                  src={project.image}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover opacity-20 blur-xl scale-110 pointer-events-none"
-                  aria-hidden="true"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              )}
-
-              {/* Subtle Scanning laser inside viewport */}
-              {isHovered && !shouldReduceMotion && (
-                <div className="pointer-events-none absolute inset-x-0 h-[2.5px] bg-accent opacity-80 scan-line animate-scan z-20 shadow-[0_0_8px_var(--color-accent)]" />
-              )}
-
-              {project.image ? <img
-                src={project.image}
-                alt={project.title}
-                className={isContainOnly 
-                  ? `relative z-10 max-h-full max-w-full object-contain rounded shadow-md transition-transform duration-500 ${
-                      isHovered && !shouldReduceMotion ? 'scale-[1.04]' : 'scale-100'
-                    }`
-                  : `w-full h-full object-cover object-top transition-transform duration-500 ${
-                      isHovered && !shouldReduceMotion ? 'scale-[1.04]' : 'scale-100'
-                    }`
-                }
-              /> : <ProjectPlaceholder title={project.title} />}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Info Card Content */}
-      <div className="p-6 flex flex-col flex-grow justify-between relative z-10 bg-canvas/30">
-        <div>
-          {/* Subtle Technical Metadata */}
-          <div className="mb-4 flex items-center justify-between font-mono text-[8.5px] text-white/35 tracking-widest select-none border-b border-white/5 pb-2">
-            <span>PROJECT_{String(index + 1).padStart(2, '0')}</span>
-            <span>STATUS // {project.repo ? 'STABLE' : 'INTERNAL'}</span>
-          </div>
-
-          <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.22em] text-accent">
-            {project.metadata}
-          </p>
-          <h3 className="mb-3 text-xl font-display font-bold leading-snug tracking-[-0.02em] text-white">
-            {project.title}
-          </h3>
-          <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-white/55">
-            {project.summary}
-          </p>
-          
-          {/* Staggered Tag highlights */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {project.stack.slice(0, 4).map((tag) => (
-              <span
-                key={tag}
-                className={`rounded-full border px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider transition-all duration-300 ${
-                  isHovered 
-                    ? 'border-accent/30 text-white/95 bg-accent/5' 
-                    : 'border-white/10 text-white/50 bg-transparent'
-                }`}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Actions bar */}
-        <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-auto">
-          {project.liveDemo ? (
-            <a
-              href={project.liveDemo}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="font-mono text-[9px] font-bold uppercase tracking-widest text-accent hover:text-white transition duration-200"
-            >
-              Live Demo
-            </a>
-          ) : project.repo ? (
-            <a
-              href={project.repo}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="font-mono text-[9px] uppercase tracking-widest text-white/50 hover:text-white transition duration-200"
-            >
-              GitHub Repo
-            </a>
-          ) : (
-            <span className="font-mono text-[9px] uppercase tracking-widest text-white/25">
-              Private Source
-            </span>
-          )}
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect();
-            }}
-            className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-accent group-hover:text-white transition duration-250 font-bold cursor-pointer"
-          >
-            <span>View Project</span>
-            <span className={`inline-block transition-transform duration-250 ${
-              isHovered && !shouldReduceMotion ? 'translate-x-1.5' : 'translate-x-0'
-            }`}>
-              &rarr;
-            </span>
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-function ProjectPlaceholder({ title, compact = false }) {
-  return (
-    <div className={`relative z-10 flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_center,rgba(0,102,255,0.18),transparent_60%)] p-6 text-center ${compact ? 'text-xs' : 'text-sm'}`}>
-      <div>
-        <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.25em] text-accent">Project overview</span>
-        <span className="font-display font-bold text-white/70">{title}</span>
-      </div>
+function EditorialProject({ project, index, reverse, onSelect, shouldReduceMotion }) {
+  return <motion.article className={`editorial-project ${reverse ? 'editorial-project--reverse' : ''}`} initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: shouldReduceMotion ? 0.25 : 0.7, ease: [0.22, 1, 0.36, 1] }}>
+    <button type="button" className="editorial-project__visual" onClick={onSelect} aria-label={`View ${project.title}`}>
+      <span className="editorial-project__number">{String(index + 1).padStart(2, '0')}</span>
+      {project.image ? <img src={project.image} alt={project.title} loading="lazy" /> : <div className="editorial-project__placeholder"><span>VISUAL STUDY</span><strong>{project.title}</strong></div>}
+      <span className="editorial-project__open">View project ↗</span>
+    </button>
+    <div className="editorial-project__copy">
+      <p className="eyebrow">{project.category === 'ai' ? 'AI / MACHINE LEARNING' : 'SOFTWARE ENGINEERING'}</p>
+      <h3>{project.title}</h3><p className="editorial-project__meta">{project.metadata}</p>
+      <p className="editorial-project__summary">{project.summary}</p>
+      <div className="editorial-project__footer"><div className="editorial-tags">{project.stack.slice(0, 5).map((tech) => <span key={tech}>{tech}</span>)}</div><button type="button" onClick={onSelect} className="editorial-arrow" aria-label={`Open details for ${project.title}`}>↗</button></div>
     </div>
-  )
+  </motion.article>
 }

@@ -108,9 +108,9 @@ function PassCard({ pass, index, scrollYProgress, shouldReduceMotion }) {
   const start = index * 0.18
   const end = start + 0.22
   const cardProgress = useTransform(scrollYProgress, [start, end], [0, 1])
-  const backgroundColor = useTransform(cardProgress, (v) => (v > 0.45 ? '#0066ff' : 'rgba(255, 255, 255, 0.03)'))
+  const backgroundColor = useTransform(cardProgress, (v) => (v > 0.45 ? '#00a19c' : 'rgba(255, 255, 255, 0.03)'))
   const borderColor = useTransform(cardProgress, (v) =>
-    v > 0.45 ? '#0066ff' : 'rgba(255, 255, 255, 0.1)',
+    v > 0.45 ? '#00a19c' : 'rgba(255, 255, 255, 0.1)',
   )
   const color = useTransform(cardProgress, (v) => (v > 0.45 ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)'))
   const boxShadow = useTransform(cardProgress, (v) =>

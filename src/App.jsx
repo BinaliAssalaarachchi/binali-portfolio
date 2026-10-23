@@ -11,6 +11,7 @@ import Education from './components/Education'
 import Leadership from './components/Leadership'
 import Certifications from './components/Certifications'
 import Navigation from './components/Navigation'
+import ScrollProgress from './components/ScrollProgress'
 
 export default function App() {
   const [loading, setLoading] = useState(true)
@@ -19,8 +20,9 @@ export default function App() {
     <>
       {loading && <Preloader onComplete={() => setLoading(false)} />}
       {!loading && <Navigation />}
+      {!loading && <ScrollProgress />}
 
-      <main className={loading ? 'overflow-hidden' : undefined}>
+      <main className={`portfolio-shell ${loading ? 'overflow-hidden' : ''}`}>
         <Hero />
         <About />
         <TechStack />

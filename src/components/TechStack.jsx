@@ -192,7 +192,7 @@ export default function TechStack() {
   const shouldReduceMotion = useReducedMotion()
 
   return (
-    <section id="tech-stack" className="relative overflow-hidden bg-canvas px-6 py-20 lg:px-10 lg:py-28 border-t border-white/5">
+    <section id="tech-stack" className="relative overflow-hidden bg-canvas motorsport-grid px-6 py-20 lg:px-10 lg:py-28 border-t border-white/5">
       {/* Dynamic Background Grid and Glows */}
       {!shouldReduceMotion && (
         <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(255, 255, 255, 0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255, 255, 255, 0.7)_1px,transparent_1px)] [background-size:60px_60px]" />

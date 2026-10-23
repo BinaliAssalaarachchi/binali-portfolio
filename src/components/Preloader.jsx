@@ -1,44 +1,30 @@
-import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
-const STATUSES = [
-  'SYSTEM CORE INITIALIZING',
-  'ESTABLISHING COGNITIVE INTERFACE',
-  'SYSTEM READY'
+const STATUS_SEQUENCE = [
+  'INITIALISING PORTFOLIO',
+  'LOADING PROJECTS // LAP 01',
+  'READY TO EXPLORE',
 ]
 
 export default function Preloader({ onComplete }) {
-  const [phase, setPhase] = useState('init') // 'init', 'processing', 'reveal', 'exit'
-  const [status, setStatus] = useState(STATUSES[0])
-  const [typedText, setTypedText] = useState('')
+  const [phase, setPhase] = useState('grid')
+  const [status, setStatus] = useState(STATUS_SEQUENCE[0])
   const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
     if (shouldReduceMotion) {
-      // Reduced motion fast-track
-      const timer = setTimeout(() => {
-        setPhase('exit')
-      }, 300)
+      const timer = setTimeout(() => setPhase('exit'), 250)
       return () => clearTimeout(timer)
     }
 
-    // Sequence Milestones:
-    // Phase 1 (0.0s - 2.0s): Robot Head outline forms
-    // Phase 2 (2.0s - 3.2s): Typing simulation "Hi, I'm Binali..."
-    // Phase 3 (3.2s - 6.2s): Calm Identity Reveal (Stable hold for 3.0s total)
-    // Phase 4 (6.2s+): Exit transition
     const timers = [
       setTimeout(() => {
-        setPhase('processing')
-        setStatus(STATUSES[1])
-      }, 2000),
-      setTimeout(() => {
-        setPhase('reveal')
-        setStatus(STATUSES[2])
-      }, 3200),
-      setTimeout(() => {
-        setPhase('exit')
-      }, 6200)
+        setPhase('identity')
+        setStatus(STATUS_SEQUENCE[1])
+      }, 950),
+      setTimeout(() => setStatus(STATUS_SEQUENCE[2]), 1900),
+      setTimeout(() => setPhase('exit'), 2800),
     ]
 
     return () => timers.forEach(clearTimeout)
@@ -46,265 +32,70 @@ export default function Preloader({ onComplete }) {
 
   useEffect(() => {
     if (phase !== 'exit') return undefined
-    const exitTimer = setTimeout(() => {
-      onComplete?.()
-    }, shouldReduceMotion ? 200 : 850)
-    return () => clearTimeout(exitTimer)
+    const timer = setTimeout(() => onComplete?.(), shouldReduceMotion ? 150 : 650)
+    return () => clearTimeout(timer)
   }, [phase, onComplete, shouldReduceMotion])
-
-  // Character typing simulation in Phase 2
-  useEffect(() => {
-    if (phase !== 'processing') return
-
-    let index = 0
-    const textToType = "Hi, I'm Binali!"
-    const interval = setInterval(() => {
-      if (index < textToType.length) {
-        setTypedText(prev => prev + textToType.charAt(index))
-        index++
-      } else {
-        clearInterval(interval)
-      }
-    }, 60)
-
-    return () => clearInterval(interval)
-  }, [phase])
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100001] flex flex-col items-center justify-center overflow-hidden bg-canvas select-none"
+      className="fixed inset-0 z-[100001] flex items-center justify-center overflow-hidden bg-[#08090b] px-6 text-white"
       initial={{ opacity: 1, y: 0 }}
       animate={phase === 'exit' ? { y: '-100%' } : { y: 0 }}
-      transition={
-        shouldReduceMotion
-          ? { duration: 0.25, ease: 'easeOut' }
-          : { duration: 0.85, ease: [0.76, 0, 0.24, 1] }
-      }
+      transition={shouldReduceMotion ? { duration: 0.2 } : { duration: 0.65, ease: [0.76, 0, 0.24, 1] }}
     >
-      {/* Blueprint Grid Background */}
-      {!shouldReduceMotion && (
-        <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:60px_60px]" />
-      )}
+      <div className="pointer-events-none absolute inset-0 motorsport-grid opacity-60" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 race-stripe" />
 
-      <div className="relative flex flex-col items-center justify-center w-full max-w-lg px-6 h-[400px]">
+      <div className="relative w-full max-w-4xl">
+        <div className="mb-8 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.28em] text-white/40">
+          <span>BINALI // PORTFOLIO</span>
+          <span className="text-race-red">PORTFOLIO LOADING</span>
+        </div>
 
-        {/* Animated Robot / AI Head SVG */}
-        <AnimatePresence>
-          {!shouldReduceMotion && (phase === 'init' || phase === 'processing') && (
-            <motion.div
-              className="absolute inset-0 flex flex-col items-center justify-center"
-              exit={{ opacity: 0, scale: 0.94 }}
-              transition={{ duration: 0.4 }}
+        <div className="relative overflow-hidden border-y border-white/15 bg-white/[0.02] py-10">
+          <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 800 110" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 82 C145 82 138 25 270 25 S388 88 500 67 S640 18 800 32" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="5 8" />
+            <motion.path d="M0 82 C145 82 138 25 270 25 S388 88 500 67 S640 18 800 32" fill="none" stroke="var(--color-petrol)" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: phase === 'exit' ? 1 : phase === 'identity' ? 0.72 : 0.34 }} transition={{ duration: shouldReduceMotion ? 0.2 : 1.8, ease: 'easeInOut' }} />
+          </svg>
+          <motion.div
+            className="absolute h-2.5 w-2.5 rounded-full border-2 border-race-red bg-[#08090b] shadow-[0_0_16px_rgba(225,6,0,0.7)]"
+            initial={{ left: '0%', top: '72%' }}
+            animate={{ left: phase === 'exit' ? '98%' : phase === 'identity' ? '70%' : '34%', top: phase === 'exit' ? '28%' : phase === 'identity' ? '39%' : '24%' }}
+            transition={{ duration: shouldReduceMotion ? 0.2 : 1.8, ease: 'easeInOut' }}
+          />
+          <div className="relative flex items-end justify-between px-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
+            <span><i className="mr-2 inline-block h-2 w-2 rounded-full bg-white/40" />START</span>
+            <span className="text-petrol">LAP 01 // CURRENT POSITION</span>
+            <span>CURRENT</span>
+          </div>
+        </div>
+
+        <div className="mt-10 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
+          <div>
+            <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.3em] text-petrol">Portfolio // Current Run</p>
+            <motion.h1
+              className="font-display text-[clamp(3.2rem,10vw,7rem)] font-semibold uppercase leading-[0.85] tracking-[-0.03em]"
+              initial={{ opacity: 0, x: -24 }}
+              animate={{ opacity: phase === 'grid' ? 0 : 1, x: phase === 'grid' ? -24 : 0 }}
+              transition={{ duration: 0.55 }}
             >
-              {/* Cute full-body waving robot outline */}
-              <motion.svg
-                className="w-48 h-48 text-white opacity-90"
-                viewBox="0 0 100 100"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
-                {/* 1. Antenna */}
-                <motion.line
-                  x1="50" y1="18" x2="50" y2="10"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                />
-                <motion.circle
-                  cx="50" cy="8" r="2.5"
-                  fill="currentColor"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', delay: 0.3 }}
-                />
+              Binali A.
+            </motion.h1>
+          </div>
+          <motion.div
+            className="border-l-2 border-race-red pl-4 font-mono text-[11px] uppercase leading-relaxed tracking-[0.16em] text-white/55"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: phase === 'grid' ? 0 : 1 }}
+            transition={{ delay: 0.25, duration: 0.5 }}
+          >
+            Artificial Intelligence<br />
+            Software Engineering
+          </motion.div>
+        </div>
 
-                {/* 2. Head */}
-                <motion.rect
-                  x="34" y="18" width="32" height="24" rx="6"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 1.0, ease: 'easeInOut', delay: 0.1 }}
-                />
-
-                {/* 3. Ears */}
-                <motion.circle
-                  cx="31" cy="30" r="2"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.8 }}
-                />
-                <motion.circle
-                  cx="69" cy="30" r="2"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.8 }}
-                />
-
-                {/* 4. Eye nodes */}
-                <motion.circle
-                  cx="43" cy="28" r="3"
-                  fill="currentColor"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, delay: 0.9 }}
-                />
-                <motion.circle
-                  cx="57" cy="28" r="3"
-                  fill="currentColor"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, delay: 0.9 }}
-                />
-
-                {/* 5. Curved smile */}
-                <motion.path
-                  d="M46 34 Q50 37 54 34"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.4, delay: 1.1 }}
-                />
-
-                {/* 6. Neck */}
-                <motion.rect
-                  x="47" y="42" width="6" height="4" rx="1"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.3, delay: 0.8 }}
-                />
-
-                {/* 7. Body */}
-                <motion.rect
-                  x="30" y="46" width="40" height="30" rx="8"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 1.2, ease: 'easeInOut', delay: 0.4 }}
-                />
-
-                {/* 8. Screen inside chest */}
-                <motion.rect
-                  x="37" y="52" width="26" height="14" rx="3"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.8, delay: 1.0 }}
-                />
-
-                {/* Heartbeat pulse line inside screen */}
-                <motion.path
-                  d="M 40 59 L 45 59 L 48 55 L 51 63 L 54 57 L 57 59 L 60 59"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 1.0, delay: 1.5 }}
-                />
-
-                {/* 9. Waving Left Arm */}
-                <motion.path
-                  d="M30 52 C 22 50, 18 42, 20 36"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.8, delay: 1.0 }}
-                />
-                <motion.circle
-                  cx="20" cy="34" r="2"
-                  fill="currentColor"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 1.6 }}
-                />
-
-                {/* 10. Right Arm */}
-                <motion.path
-                  d="M70 52 C 78 55, 82 62, 80 68"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.8, delay: 1.0 }}
-                />
-                <motion.circle
-                  cx="80" cy="70" r="2"
-                  fill="currentColor"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 1.6 }}
-                />
-
-                {/* 11. Legs */}
-                <motion.path
-                  d="M40 76 L40 88 C 40 90, 36 90, 36 88"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.7, delay: 1.2 }}
-                />
-                <motion.path
-                  d="M60 76 L60 88 C 60 90, 64 90, 64 88"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.7, delay: 1.2 }}
-                />
-              </motion.svg>
-
-              {/* Console typing simulation display */}
-              <div className="mt-10 font-mono text-[16px] tracking-widest text-accent h-6 select-none flex items-center gap-1.5">
-                <span>{typedText}</span>
-                {phase === 'processing' && (
-                  <span className="w-1.5 h-4 bg-accent animate-pulse" />
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Phase 3: Identity Reveal */}
-        <AnimatePresence>
-          {(phase === 'reveal' || phase === 'exit' || shouldReduceMotion) && (
-            <div className="flex flex-col items-center text-center z-10">
-
-              {/* Monospace Sublabel */}
-              <motion.span
-                className="font-mono text-[14px] tracking-[0.35em] text-accent uppercase font-bold mb-3"
-                initial={shouldReduceMotion ? { opacity: 0 } : { filter: 'blur(8px)', opacity: 0, y: 10 }}
-                animate={shouldReduceMotion ? { opacity: 1 } : { filter: 'blur(0px)', opacity: 0.9, y: 0 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-              >
-                Welcome to System Console
-              </motion.span>
-
-              {/* Binali Assalaarachchi */}
-              <motion.h1
-                className="font-display text-[clamp(2.2rem,6vw,3.8rem)] font-extrabold leading-tight tracking-[-0.03em] text-white"
-                initial={shouldReduceMotion ? { opacity: 0 } : { filter: 'blur(16px)', opacity: 0, y: 15 }}
-                animate={shouldReduceMotion ? { opacity: 1 } : { filter: 'blur(0px)', opacity: 1, y: 0 }}
-                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-              >
-                Binali Assalaarachchi
-              </motion.h1>
-
-              {/* Subtitle taglines */}
-              <motion.p
-                className="mt-4 font-mono text-[clamp(12px,2.2vw,14.5px)] tracking-[0.22em] text-white/50 uppercase font-semibold border-t border-white/10 pt-3 px-4"
-                initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
-                animate={{ opacity: 0.8, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.0 }}
-              >
-                Software Engineering • AI • Machine Learning
-              </motion.p>
-            </div>
-          )}
-        </AnimatePresence>
-
-        {/* Status Line */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-          <p className="font-mono text-[13px] tracking-widest text-white/30 uppercase font-semibold h-4 select-none">
-            {status}
-          </p>
+        <div className="mt-14 flex items-center justify-between border-t border-white/10 pt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">
+          <span>{status}</span>
+          <span>01 / 03</span>
         </div>
       </div>
     </motion.div>

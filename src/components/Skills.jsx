@@ -101,7 +101,7 @@ export default function Skills() {
   }
 
   return (
-    <section id="skills" className="relative overflow-hidden bg-canvas px-6 py-20 lg:px-10 lg:py-28 text-white border-t border-white/5">
+    <section id="skills" data-chapter="03 // STACK" className="relative overflow-hidden bg-canvas px-6 py-20 lg:px-10 lg:py-28 text-white border-t border-white/5">
       {/* Background blueprint grid */}
       {!shouldReduceMotion && (
         <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:60px_60px]" />
@@ -154,7 +154,7 @@ export default function Skills() {
                 {!shouldReduceMotion && (
                   <div className={`absolute left-2 top-4 bottom-4 w-[1.5px] transition-colors duration-300 ${
                     hoveredSkill && column.items.includes(hoveredSkill)
-                      ? 'bg-accent/40 shadow-[0_0_4px_rgba(0,102,255,0.2)]'
+                      ? 'bg-accent/40 shadow-[0_0_4px_rgba(0,161,156,0.2)]'
                       : 'bg-white/10'
                   }`} />
                 )}
@@ -181,7 +181,7 @@ export default function Skills() {
                               isDirectHovered 
                                 ? 'bg-accent border-accent shadow-[0_0_10px_var(--color-accent)] scale-125' 
                                 : isRelated 
-                                  ? 'bg-accent/60 border-accent/50 scale-110 shadow-[0_0_6px_rgba(0,102,255,0.3)]' 
+                                  ? 'bg-accent/60 border-accent/50 scale-110 shadow-[0_0_6px_rgba(0,161,156,0.3)]'
                                   : 'bg-canvas border-white/30 group-hover:border-white/50'
                             }`} 
                           />

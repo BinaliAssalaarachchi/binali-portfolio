@@ -135,6 +135,7 @@ export default function Footer() {
     <footer
       ref={sectionRef}
       id="contact"
+      data-chapter="07 // CONTACT"
       className="relative min-h-[50vh] overflow-hidden bg-canvas px-6 pt-20 pb-24 lg:px-10 lg:pt-28 lg:pb-32 border-t border-white/5 text-white"
     >
       <div className="mx-auto max-w-7xl">
@@ -258,7 +259,7 @@ export default function Footer() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. ALEX MILLER"
-                      className="w-full bg-white/[0.02] border border-white/10 rounded-lg px-4 py-2.5 font-mono text-[13px] text-white tracking-wide transition-all duration-300 focus:outline-none focus:border-accent focus:shadow-[0_0_8px_rgba(0,102,255,0.15)] placeholder-white/15"
+                      className="w-full bg-white/[0.02] border border-white/10 rounded-lg px-4 py-2.5 font-mono text-[13px] text-white tracking-wide transition-all duration-300 focus:outline-none focus:border-accent focus:shadow-[0_0_8px_rgba(0,161,156,0.15)] placeholder-white/15"
                       aria-describedby={errors.name ? 'name-error' : undefined}
                     />
                     {errors.name && (
@@ -279,7 +280,7 @@ export default function Footer() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="e.g. CLIENT@DOMAIN.COM"
-                      className="w-full bg-white/[0.02] border border-white/10 rounded-lg px-4 py-2.5 font-mono text-[13px] text-white tracking-wide transition-all duration-300 focus:outline-none focus:border-accent focus:shadow-[0_0_8px_rgba(0,102,255,0.15)] placeholder-white/15"
+                      className="w-full bg-white/[0.02] border border-white/10 rounded-lg px-4 py-2.5 font-mono text-[13px] text-white tracking-wide transition-all duration-300 focus:outline-none focus:border-accent focus:shadow-[0_0_8px_rgba(0,161,156,0.15)] placeholder-white/15"
                       aria-describedby={errors.email ? 'email-error' : undefined}
                     />
                     {errors.email && (
@@ -299,7 +300,7 @@ export default function Footer() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="e.g. INQUIRY ON AI MODELING CAPABILITIES..."
-                      className="w-full bg-white/[0.02] border border-white/10 rounded-lg px-4 py-2.5 font-mono text-[13px] text-white tracking-wide transition-all duration-300 focus:outline-none focus:border-accent focus:shadow-[0_0_8px_rgba(0,102,255,0.15)] placeholder-white/15 h-24 resize-none"
+                      className="w-full bg-white/[0.02] border border-white/10 rounded-lg px-4 py-2.5 font-mono text-[13px] text-white tracking-wide transition-all duration-300 focus:outline-none focus:border-accent focus:shadow-[0_0_8px_rgba(0,161,156,0.15)] placeholder-white/15 h-24 resize-none"
                       aria-describedby={errors.message ? 'message-error' : undefined}
                     />
                     {errors.message && (
@@ -321,7 +322,7 @@ export default function Footer() {
                     <button
                       type="submit"
                       disabled={status === 'loading'}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-accent/40 bg-accent/5 hover:border-accent hover:bg-accent/15 px-6 py-3 font-mono text-[12px] uppercase tracking-widest text-white transition-all duration-300 hover:shadow-[0_0_12px_rgba(0,102,255,0.25)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-accent/40 bg-accent/5 hover:border-accent hover:bg-accent/15 px-6 py-3 font-mono text-[12px] uppercase tracking-widest text-white transition-all duration-300 hover:shadow-[0_0_12px_rgba(0,161,156,0.25)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {status === 'loading' ? (
                         <>
@@ -351,7 +352,7 @@ export default function Footer() {
                 ? {}
                 : {
                     color: 'rgba(255,255,255,0.45)',
-                    textShadow: '0 0 60px rgba(0,102,255,0.35)',
+                    textShadow: '0 0 60px rgba(0,161,156,0.35)',
                   }
             }
             transition={{ type: 'spring', stiffness: 200, damping: 22 }}
