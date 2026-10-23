@@ -213,7 +213,7 @@ export default function TechStack() {
             TECHNICAL TOOLKIT
           </p>
           <h2 className="text-[clamp(2.2rem,5vw,3.5rem)] font-display font-bold leading-[1.08] tracking-[-0.03em] text-white">
-            Developing responsive systems across full-stack applications and intelligent AI pipelines.
+            Building full-stack systems and intelligent AI pipelines.
           </h2>
         </motion.div>
 

@@ -1,197 +1,72 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export default function ProjectModal({ project, onClose }) {
-  const [activeImage, setActiveImage] = useState(project?.image)
   const shouldReduceMotion = useReducedMotion()
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [touchStart, setTouchStart] = useState(null)
+  const images = useMemo(() => project ? [...new Set([project.image, ...(project.gallery || [])].filter(Boolean))] : [], [project])
+  const activeImage = images[activeIndex]
 
   useEffect(() => {
     if (!project) return undefined
-
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape') {
+        if (lightboxOpen) setLightboxOpen(false)
+        else onClose()
+      }
+      if (!lightboxOpen || images.length < 2) return
+      if (event.key === 'ArrowRight') setActiveIndex((current) => (current + 1) % images.length)
+      if (event.key === 'ArrowLeft') setActiveIndex((current) => (current - 1 + images.length) % images.length)
     }
-
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', handleKeyDown)
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', handleKeyDown) }
+  }, [project, onClose, lightboxOpen, images.length])
 
-    return () => {
-      document.body.style.overflow = ''
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [project, onClose])
+  const move = (direction) => setActiveIndex((current) => (current + direction + images.length) % images.length)
+  const handleTouchEnd = (event) => {
+    if (touchStart === null || images.length < 2) return
+    const distance = event.changedTouches[0].clientX - touchStart
+    if (Math.abs(distance) > 45) move(distance < 0 ? 1 : -1)
+    setTouchStart(null)
+  }
 
-  return (
-    <AnimatePresence>
-      {project && (
-        <motion.div
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
-        >
-          <button
-            type="button"
-            className="absolute inset-0 bg-shutter/75 backdrop-blur-md"
-            aria-label="Close project details"
-            onClick={onClose}
-          />
-
-          <motion.dialog
-            open
-            className="glass-panel relative z-10 m-0 flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-canvas/90 text-surface shadow-2xl"
-            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 40, scale: 0.96 }}
-            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.98 }}
-            transition={shouldReduceMotion ? { duration: 0.25 } : { type: 'spring', stiffness: 320, damping: 28 }}
-            aria-labelledby="project-modal-title"
-          >
-            <div className="grid max-h-[92vh] overflow-y-auto lg:grid-cols-2">
-              <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r">
-                <div className="relative mb-4 h-[300px] md:h-[400px] lg:h-[480px] w-full overflow-hidden rounded-xl bg-black/40 flex items-center justify-center p-4">
-                  {activeImage ? <>
-                    <img
-                      src={activeImage}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover opacity-20 blur-xl scale-110 pointer-events-none"
-                      aria-hidden="true"
-                    />
-                    <AnimatePresence mode="wait">
-                      <motion.img
-                        key={activeImage}
-                        src={activeImage}
-                        alt={`${project.title} preview`}
-                        className="relative z-10 max-h-full max-w-full object-contain rounded-lg shadow-xl"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                      />
-                    </AnimatePresence>
-                  </> : <div className="relative z-10 text-center">
-                    <span className="mb-3 block font-mono text-[10px] uppercase tracking-[0.25em] text-accent">Project overview</span>
-                    <span className="font-display text-lg font-bold text-white/70">{project.title}</span>
-                  </div>}
-                </div>
-
-                {project.gallery?.length > 1 && (
-                  <div className="flex flex-wrap gap-2">
-                    {project.gallery.map((image) => (
-                      <button
-                        key={image}
-                        type="button"
-                        onClick={() => setActiveImage(image)}
-                        className={`h-14 w-20 overflow-hidden rounded-lg border transition ${
-                          activeImage === image
-                            ? 'border-accent ring-2 ring-accent/40'
-                            : 'border-white/10 opacity-70 hover:opacity-100'
-                        }`}
-                      >
-                        <img
-                          src={image}
-                          alt=""
-                          className="h-full w-full object-contain p-1"
-                          onError={(e) => {
-                            e.currentTarget.src =
-                              'data:image/svg+xml,' +
-                              encodeURIComponent(
-                                `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="56" viewBox="0 0 80 56"><rect fill="#2a2a2a" width="80" height="56"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="8">Asset</text></svg>`,
-                              )
-                          }}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-col p-6 md:p-8">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="absolute right-5 top-5 rounded-full border border-white/15 px-3 py-1 text-xs uppercase tracking-widest text-white/60 transition hover:border-white/40 hover:text-white"
-                >
-                  Close
-                </button>
-
-                <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-white/45">
-                  {project.metadata}
-                </p>
-                <h2
-                  id="project-modal-title"
-                  className="mb-4 pr-16 text-2xl font-display font-bold leading-tight tracking-[-0.02em] md:text-3xl"
-                >
-                  {project.title}
-                </h2>
-
-                <div className="mb-5 flex flex-wrap gap-2">
-                  {project.stack.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-white/15 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-white/70"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <p className="mb-6 text-sm leading-relaxed text-white/65 md:text-base">
-                  {project.summary}
-                </p>
-
-                {project.contributions?.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-white/50">
-                      Contributions
-                    </h3>
-                    <ul className="space-y-2 text-sm leading-relaxed text-white/70">
-                      {project.contributions.map((item) => (
-                        <li key={item} className="flex gap-2">
-                          <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {(project.repo || project.liveDemo) ? (
-                  <div className="mt-auto flex flex-wrap gap-3">
-                  {project.liveDemo && <motion.a
-                    href={project.liveDemo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex w-fit items-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white"
-                    whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
-                    whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                  >
-                    Live Demo
-                  </motion.a>}
-                  {project.repo && <motion.a
-                    href={project.repo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex w-fit items-center rounded-full border border-white/15 px-6 py-3 text-sm font-semibold text-white/80"
-                    whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
-                    whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                  >
-                    View Repository
-                  </motion.a>
-                  }
-                  </div>
-                ) : (
-                  <p className="mt-auto font-mono text-xs uppercase tracking-[0.2em] text-white/35">
-                    Repository unavailable
-                  </p>
-                )}
-              </div>
+  return <AnimatePresence>
+    {project && <motion.div className="project-viewer fixed inset-0 z-[99999] overflow-y-auto" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <button type="button" className="absolute inset-0 project-viewer__backdrop" aria-label="Close project details" onClick={onClose} />
+      <motion.div className="project-viewer__panel relative z-10 mx-auto my-4 flex min-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-[1500px] flex-col overflow-hidden md:my-8 md:min-h-[calc(100vh-4rem)] md:w-[calc(100%-4rem)]" initial={{ y: shouldReduceMotion ? 0 : 28 }} animate={{ y: 0 }} exit={{ y: 18 }}>
+        <header className="project-viewer__topbar"><span>PROJECT {String(project.id).toUpperCase()}</span><button type="button" onClick={onClose}>Back to Projects ×</button></header>
+        <div className="grid flex-1 lg:grid-cols-[1.45fr_.75fr]">
+          <div className="project-viewer__gallery" onTouchStart={(event) => setTouchStart(event.touches[0].clientX)} onTouchEnd={handleTouchEnd}>
+            <div className="project-viewer__main-image">
+              {activeImage ? <button type="button" className="project-viewer__image-button" onClick={() => setLightboxOpen(true)} aria-label="Open image fullscreen">
+                <img src={activeImage} alt={`${project.title} screenshot ${activeIndex + 1}`} />
+                <span>Open full size ↗</span>
+              </button> : <div className="project-viewer__empty"><strong>Screenshot needed</strong><span>No application screenshot is currently available for this project.</span></div>}
+              {images.length > 1 && <><button type="button" className="project-viewer__control project-viewer__control--prev" onClick={() => move(-1)} aria-label="Previous screenshot">←</button><button type="button" className="project-viewer__control project-viewer__control--next" onClick={() => move(1)} aria-label="Next screenshot">→</button></>}
             </div>
-          </motion.dialog>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  )
+            {images.length > 0 && <div className="project-viewer__thumbs" aria-label="Project screenshots">{images.map((image, index) => <button key={image} type="button" className={index === activeIndex ? 'is-active' : ''} onClick={() => setActiveIndex(index)} aria-label={`Show screenshot ${index + 1}`}><img src={image} alt="" /></button>)}</div>}
+            {images.length > 0 && <p className="project-viewer__caption">Screenshot {activeIndex + 1} of {images.length} · Select an image to inspect it at full size.</p>}
+          </div>
+          <div className="project-viewer__details">
+            <p className="eyebrow">{project.category === 'ai' ? 'AI / MACHINE LEARNING' : 'SOFTWARE ENGINEERING'}</p>
+            <h2 id="project-modal-title">{project.title}</h2>
+            <p className="project-viewer__meta">{project.metadata}</p>
+            <div className="project-viewer__tags">{project.stack.map((tag) => <span key={tag}>{tag}</span>)}</div>
+            <p className="project-viewer__summary">{project.summary}</p>
+            {project.contributions?.length > 0 && <div className="project-viewer__contributions"><h3>Contributions</h3><ul>{project.contributions.map((item) => <li key={item}>{item}</li>)}</ul></div>}
+            <div className="project-viewer__actions">{project.liveDemo && <a href={project.liveDemo} target="_blank" rel="noopener noreferrer">Live Demo ↗</a>}{project.repo && <a href={project.repo} target="_blank" rel="noopener noreferrer">View Repository ↗</a>}</div>
+          </div>
+        </div>
+      </motion.div>
+      <AnimatePresence>{lightboxOpen && activeImage && <motion.div className="project-lightbox fixed inset-0 z-[100000]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <button type="button" className="project-lightbox__close" onClick={() => setLightboxOpen(false)} aria-label="Close fullscreen image">Close ×</button>
+        <button type="button" className="project-lightbox__dismiss" onClick={() => setLightboxOpen(false)} aria-label="Close image viewer" />
+        <img src={activeImage} alt={`${project.title} screenshot ${activeIndex + 1}`} />
+        {images.length > 1 && <><button type="button" className="project-lightbox__arrow project-lightbox__arrow--prev" onClick={() => move(-1)} aria-label="Previous screenshot">←</button><button type="button" className="project-lightbox__arrow project-lightbox__arrow--next" onClick={() => move(1)} aria-label="Next screenshot">→</button></>}
+      </motion.div>}</AnimatePresence>
+    </motion.div>}
+  </AnimatePresence>
 }

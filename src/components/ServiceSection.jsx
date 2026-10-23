@@ -166,7 +166,7 @@ export default function ServiceSection() {
           transition={{ duration: shouldReduceMotion ? 0.2 : 0.6, delay: shouldReduceMotion ? 0 : 0.3 }}
         >
           <span className="text-xl font-display font-black text-white text-center sm:text-left tracking-tight">
-            8+ projects shipped across 4 engineering domains
+            10+ projects shipped across 4 engineering domains
           </span>
           <a
             href="#projects"

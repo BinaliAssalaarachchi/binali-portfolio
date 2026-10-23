@@ -135,7 +135,6 @@ export default function Footer() {
     <footer
       ref={sectionRef}
       id="contact"
-      data-chapter="07 // CONTACT"
       className="relative min-h-[50vh] overflow-hidden bg-canvas px-6 pt-20 pb-24 lg:px-10 lg:pt-28 lg:pb-32 border-t border-white/5 text-white"
     >
       <div className="mx-auto max-w-7xl">
@@ -351,8 +350,8 @@ export default function Footer() {
               shouldReduceMotion
                 ? {}
                 : {
-                    color: 'rgba(255,255,255,0.45)',
-                    textShadow: '0 0 60px rgba(0,161,156,0.35)',
+                    color: '#d7ff45',
+                    textShadow: '0 0 24px rgba(215,255,69,0.55), 0 0 70px rgba(215,255,69,0.3)',
                   }
             }
             transition={{ type: 'spring', stiffness: 200, damping: 22 }}
