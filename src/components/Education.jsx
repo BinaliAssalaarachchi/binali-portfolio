@@ -6,13 +6,13 @@ const educationData = [
     degree: 'BSc (Hons) Information Technology specializing in Artificial Intelligence',
     institution: 'Sri Lanka Institute of Information Technology (SLIIT)',
     period: '2024 – Present',
-    details: 'CGPA: 3.52 | Currently in Year 3',
+    details: 'Currently in Year 3, Semester 1',
   },
   {
     degree: 'BCS Level 6 Professional Graduate Diploma in IT',
     institution: 'Live College',
-    period: '2025 – Present',
-    details: 'Modules: Advanced Database Management, Programming Paradigms, MIS, System Design',
+    period: 'Completed',
+    details: 'Professional Graduate Diploma in IT — graduated',
   },
   {
     degree: 'BCS Level 5 Diploma in IT',

@@ -107,7 +107,7 @@ export default function About() {
               </div>
               <div className="flex justify-between">
                 <span>[CGPA]:</span>
-                <span className="text-white font-bold">3.52 / 4.0</span>
+                <span className="text-white font-bold">3.56 / 4.0</span>
               </div>
               <div className="flex justify-between">
                 <span>[LOC]:</span>
@@ -136,7 +136,7 @@ export default function About() {
               title="Current Status"
               shouldReduceMotion={shouldReduceMotion}
             >
-              SLIIT Faculty of Computing Dean&apos;s List academic recognition (GPA 3.52) | Completed British Computer Society HEQ Level 4 &amp; 5.
+              Third-year BSc (Hons) Information Technology undergraduate at SLIIT, specialising in Artificial Intelligence. BCS Professional Graduate Diploma in IT — graduated.
             </TelemetryCard>
 
             <TelemetryCard
@@ -144,7 +144,7 @@ export default function About() {
               title="Building"
               shouldReduceMotion={shouldReduceMotion}
             >
-              CineMatch (AI Movie Recommender), SmartStudy (ML Student Planner), Heart Disease Prediction Model, Wonderway Travel Planner App, and IoT Water Level Controller.
+              Lunelle, a deployed AI companion for PMDD-related symptom awareness, alongside CineMatch and full-stack software engineering projects.
             </TelemetryCard>
 
             <TelemetryCard
@@ -152,7 +152,7 @@ export default function About() {
               title="Areas of interest"
               shouldReduceMotion={shouldReduceMotion}
             >
-              Deep neural networks architecture optimization, relational database systems, REST API integrations, and IoT sensor hardware systems.
+              AI engineering, full-stack development, recommendation systems, responsible AI API integration, and intelligent search algorithms.
             </TelemetryCard>
 
           </div>

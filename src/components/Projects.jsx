@@ -32,22 +32,46 @@ export default function Projects() {
           </h2>
         </motion.div>
 
-        {/* Projects Grid */}
-        <div className="grid gap-8 md:grid-cols-2 items-stretch">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={index}
-              shouldReduceMotion={shouldReduceMotion}
-              onSelect={() => setSelectedProject(project)}
-            />
-          ))}
-        </div>
+        <ProjectGroup
+          title="AI / ML PROJECTS"
+          projects={projects.filter((project) => project.category === 'ai')}
+          startIndex={0}
+          shouldReduceMotion={shouldReduceMotion}
+          onSelect={setSelectedProject}
+        />
+        <ProjectGroup
+          title="SOFTWARE ENGINEERING PROJECTS"
+          projects={projects.filter((project) => project.category === 'swe')}
+          startIndex={projects.filter((project) => project.category === 'ai').length}
+          shouldReduceMotion={shouldReduceMotion}
+          onSelect={setSelectedProject}
+        />
       </div>
 
-      <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+      <ProjectModal key={selectedProject?.id ?? 'closed'} project={selectedProject} onClose={() => setSelectedProject(null)} />
     </section>
+  )
+}
+
+function ProjectGroup({ title, projects: groupProjects, startIndex, shouldReduceMotion, onSelect }) {
+  return (
+    <div className="mb-16 last:mb-0">
+      <div className="mb-7 flex items-center gap-4">
+        <h3 className="font-mono text-sm font-bold uppercase tracking-[0.25em] text-accent">{title}</h3>
+        <span className="h-px flex-1 bg-white/10" aria-hidden="true" />
+      </div>
+      <div className="grid items-stretch gap-8 md:grid-cols-2">
+        {groupProjects.map((project, index) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            index={startIndex + index}
+            shouldReduceMotion={shouldReduceMotion}
+            onSelect={() => onSelect(project)}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -127,20 +151,13 @@ function ProjectCard({ project, index, shouldReduceMotion, onSelect }) {
               <div className="pointer-events-none absolute inset-x-0 h-[2.5px] bg-accent opacity-80 scan-line animate-scan z-20 shadow-[0_0_8px_var(--color-accent)]" />
             )}
             
-            <img
+            {project.image ? <img
               src={project.image}
               alt={project.title}
               className={`h-full w-full object-cover pt-3.5 transition-transform duration-500 ${
                 isHovered && !shouldReduceMotion ? 'scale-[1.04]' : 'scale-100'
               }`}
-              onError={(e) => {
-                e.currentTarget.src =
-                  'data:image/svg+xml,' +
-                  encodeURIComponent(
-                    `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="600" viewBox="0 0 300 600"><rect fill="#1a1a1a" width="300" height="600"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="12">Mockup</text></svg>`,
-                  )
-              }}
-            />
+            /> : <ProjectPlaceholder title={project.title} compact />}
           </div>
         </div>
       ) : (
@@ -180,7 +197,7 @@ function ProjectCard({ project, index, shouldReduceMotion, onSelect }) {
                 <div className="pointer-events-none absolute inset-x-0 h-[2.5px] bg-accent opacity-80 scan-line animate-scan z-20 shadow-[0_0_8px_var(--color-accent)]" />
               )}
 
-              <img
+              {project.image ? <img
                 src={project.image}
                 alt={project.title}
                 className={isContainOnly 
@@ -191,14 +208,7 @@ function ProjectCard({ project, index, shouldReduceMotion, onSelect }) {
                       isHovered && !shouldReduceMotion ? 'scale-[1.04]' : 'scale-100'
                     }`
                 }
-                onError={(e) => {
-                  e.currentTarget.src =
-                    'data:image/svg+xml,' +
-                    encodeURIComponent(
-                      `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500"><rect fill="#1a1a1a" width="800" height="500"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">${project.title.slice(0, 30)}</text></svg>`,
-                    )
-                }}
-              />
+              /> : <ProjectPlaceholder title={project.title} />}
             </div>
           </div>
         </div>
@@ -242,7 +252,17 @@ function ProjectCard({ project, index, shouldReduceMotion, onSelect }) {
 
         {/* Actions bar */}
         <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-auto">
-          {project.repo ? (
+          {project.liveDemo ? (
+            <a
+              href={project.liveDemo}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-mono text-[9px] font-bold uppercase tracking-widest text-accent hover:text-white transition duration-200"
+            >
+              Live Demo
+            </a>
+          ) : project.repo ? (
             <a
               href={project.repo}
               target="_blank"
@@ -276,5 +296,16 @@ function ProjectCard({ project, index, shouldReduceMotion, onSelect }) {
         </div>
       </div>
     </motion.div>
+  )
+}
+
+function ProjectPlaceholder({ title, compact = false }) {
+  return (
+    <div className={`relative z-10 flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_center,rgba(0,102,255,0.18),transparent_60%)] p-6 text-center ${compact ? 'text-xs' : 'text-sm'}`}>
+      <div>
+        <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.25em] text-accent">Project overview</span>
+        <span className="font-display font-bold text-white/70">{title}</span>
+      </div>
+    </div>
   )
 }

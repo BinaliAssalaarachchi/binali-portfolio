@@ -76,8 +76,8 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: shouldReduceMotion ? 0.3 : 0.8, delay: shouldReduceMotion ? 0.1 : 0.6 }}
             >
-              AI-focused IT undergraduate engineering intelligent systems, training predictive
-              models, and building full-stack applications with modern technologies.
+              Third-year IT undergraduate specialising in Artificial Intelligence, with hands-on
+              experience building AI-enabled products and full-stack software for academic and personal projects.
             </motion.p>
 
             {/* Staggered Element 4: Action CTAs (0.85s Delay) */}

@@ -58,8 +58,6 @@ export default function Preloader({ onComplete }) {
 
     let index = 0
     const textToType = "Hi, I'm Binali!"
-    setTypedText('')
-
     const interval = setInterval(() => {
       if (index < textToType.length) {
         setTypedText(prev => prev + textToType.charAt(index))

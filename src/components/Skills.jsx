@@ -3,24 +3,42 @@ import { motion, useReducedMotion } from 'framer-motion'
 
 const SKILL_CATEGORIES = [
   {
-    title: 'Programming',
-    items: ['Python', 'Java', 'JavaScript', 'C', 'Node.js'],
+    title: 'Programming Languages',
+    items: ['Python', 'Java', 'JavaScript', 'C#'],
   },
   {
     title: 'Frontend',
-    items: ['React.js', 'React Native', 'HTML5', 'CSS3'],
+    items: ['React', 'Vite', 'Tailwind CSS'],
+  },
+  {
+    title: 'Backend',
+    items: ['Node.js', 'Express.js', 'Django', 'ASP.NET'],
   },
   {
     title: 'AI / Machine Learning',
-    items: ['Neural Networks', 'Scikit-learn', 'Pandas', 'NumPy', 'Matplotlib & Seaborn'],
+    items: [
+      'Scikit-learn',
+      'Pandas',
+      'Data Preprocessing',
+      'Feature Engineering',
+      'Model Training',
+      'Model Evaluation',
+      'Cosine Similarity',
+      'Heuristic Search',
+      'AI API Integration',
+    ],
   },
   {
     title: 'Databases',
-    items: ['MySQL', 'MongoDB', 'SQL Queries', 'Database Design'],
+    items: ['Firebase / Firestore', 'MySQL', 'PostgreSQL', 'MongoDB'],
   },
   {
-    title: 'Tools & Practices',
-    items: ['Git & GitHub', 'OOP Principles', 'REST APIs', 'Agile / Scrum'],
+    title: 'Mobile & Tools',
+    items: ['Flutter', 'React Native', 'Git & GitHub', 'Firebase Hosting', 'Google Cloud Run'],
+  },
+  {
+    title: 'Practices',
+    items: ['API Integration', 'Deployment', 'OOP', 'MVC', 'Agile / Scrum'],
   },
 ]
 
@@ -30,7 +48,7 @@ const RELATIONSHIPS = {
   'JavaScript': ['React.js', 'React Native', 'Node.js', 'REST APIs'],
   'C': ['OOP Principles'],
   'Node.js': ['JavaScript', 'REST APIs', 'MongoDB'],
-  'React.js': ['JavaScript', 'HTML5', 'CSS3', 'REST APIs'],
+  'React': ['JavaScript', 'Vite', 'Tailwind CSS', 'REST APIs'],
   'React Native': ['JavaScript', 'REST APIs'],
   'HTML5': ['React.js', 'CSS3'],
   'CSS3': ['React.js', 'HTML5'],
@@ -43,10 +61,33 @@ const RELATIONSHIPS = {
   'MongoDB': ['Node.js', 'REST APIs'],
   'SQL Queries': ['MySQL', 'Database Design'],
   'Database Design': ['MySQL', 'SQL Queries'],
-  'Git & GitHub': ['Python', 'Java', 'JavaScript', 'C'],
-  'OOP Principles': ['Java', 'C'],
-  'REST APIs': ['Node.js', 'React.js', 'React Native', 'MongoDB'],
-  'Agile / Scrum': ['Git & GitHub']
+  'Git & GitHub': ['Python', 'Java', 'JavaScript', 'C#'],
+  'C#': ['ASP.NET', 'PostgreSQL'],
+  'Vite': ['React', 'JavaScript'],
+  'Tailwind CSS': ['React', 'Vite'],
+  'ASP.NET': ['C#', 'PostgreSQL'],
+  'Express.js': ['Node.js', 'REST APIs'],
+  'Django': ['Python', 'MySQL'],
+  'Firebase / Firestore': ['Firebase Hosting', 'Google Cloud Run'],
+  'Firebase Hosting': ['Firebase / Firestore', 'Git & GitHub'],
+  'Google Cloud Run': ['Firebase Hosting'],
+  'Flutter': ['MySQL', 'Django'],
+  'PostgreSQL': ['C#', 'ASP.NET'],
+  'Recommendation Systems': ['Python', 'Scikit-learn', 'Pandas'],
+  'Intelligent Search': ['Python', 'Scikit-learn'],
+  'AI API Integration': ['Python', 'Node.js'],
+  'Data Preprocessing': ['Python', 'Pandas', 'Scikit-learn'],
+  'Feature Engineering': ['Python', 'Pandas', 'Scikit-learn'],
+  'Model Training': ['Python', 'Scikit-learn', 'Model Evaluation'],
+  'Model Evaluation': ['Python', 'Scikit-learn', 'Model Training'],
+  'Cosine Similarity': ['Python', 'Scikit-learn', 'Recommendation Systems'],
+  'Heuristic Search': ['Python', 'Intelligent Search'],
+  'API Integration': ['Node.js', 'React', 'React Native'],
+  'Deployment': ['Firebase Hosting', 'Google Cloud Run', 'Git & GitHub'],
+  'OOP': ['Java', 'C#'],
+  'MVC': ['Java', 'ASP.NET', 'Django'],
+  'Agile / Scrum': ['Git & GitHub', 'Deployment'],
+  'REST APIs': ['Node.js', 'React', 'React Native', 'MongoDB'],
 }
 
 export default function Skills() {
@@ -85,7 +126,7 @@ export default function Skills() {
         </motion.div>
 
         {/* Network Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-stretch select-none">
+        <div className="grid grid-cols-1 gap-6 select-none sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 items-stretch">
           {SKILL_CATEGORIES.map((column, colIndex) => (
             <motion.article
               key={column.title}

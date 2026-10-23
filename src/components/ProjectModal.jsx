@@ -6,10 +6,6 @@ export default function ProjectModal({ project, onClose }) {
   const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
-    if (project) setActiveImage(project.image)
-  }, [project])
-
-  useEffect(() => {
     if (!project) return undefined
 
     const handleKeyDown = (event) => {
@@ -54,36 +50,29 @@ export default function ProjectModal({ project, onClose }) {
             <div className="grid max-h-[92vh] overflow-y-auto lg:grid-cols-2">
               <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r">
                 <div className="relative mb-4 h-[300px] md:h-[400px] lg:h-[480px] w-full overflow-hidden rounded-xl bg-black/40 flex items-center justify-center p-4">
-                  {/* Ambient Blurred Backdrop */}
-                  <img
-                    src={activeImage}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover opacity-20 blur-xl scale-110 pointer-events-none"
-                    aria-hidden="true"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={activeImage}
+                  {activeImage ? <>
+                    <img
                       src={activeImage}
-                      alt={`${project.title} preview`}
-                      className="relative z-10 max-h-full max-w-full object-contain rounded-lg shadow-xl"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.25 }}
-                      onError={(e) => {
-                        e.currentTarget.src =
-                          'data:image/svg+xml,' +
-                          encodeURIComponent(
-                            `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450"><rect fill="#2a2a2a" width="800" height="450"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="18">Project asset</text></svg>`,
-                          )
-                      }}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover opacity-20 blur-xl scale-110 pointer-events-none"
+                      aria-hidden="true"
                     />
-                  </AnimatePresence>
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={activeImage}
+                        src={activeImage}
+                        alt={`${project.title} preview`}
+                        className="relative z-10 max-h-full max-w-full object-contain rounded-lg shadow-xl"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                      />
+                    </AnimatePresence>
+                  </> : <div className="relative z-10 text-center">
+                    <span className="mb-3 block font-mono text-[10px] uppercase tracking-[0.25em] text-accent">Project overview</span>
+                    <span className="font-display text-lg font-bold text-white/70">{project.title}</span>
+                  </div>}
                 </div>
 
                 {project.gallery?.length > 1 && (
@@ -167,18 +156,32 @@ export default function ProjectModal({ project, onClose }) {
                   </div>
                 )}
 
-                {project.repo ? (
-                  <motion.a
+                {(project.repo || project.liveDemo) ? (
+                  <div className="mt-auto flex flex-wrap gap-3">
+                  {project.liveDemo && <motion.a
+                    href={project.liveDemo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex w-fit items-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white"
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+                    whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                  >
+                    Live Demo
+                  </motion.a>}
+                  {project.repo && <motion.a
                     href={project.repo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-auto inline-flex w-fit items-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white"
+                    className="inline-flex w-fit items-center rounded-full border border-white/15 px-6 py-3 text-sm font-semibold text-white/80"
                     whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
                     whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 22 }}
                   >
                     View Repository
                   </motion.a>
+                  }
+                  </div>
                 ) : (
                   <p className="mt-auto font-mono text-xs uppercase tracking-[0.2em] text-white/35">
                     Repository unavailable

@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import pythonIcon from '../assets/python.png'
 import javascriptIcon from '../assets/javascript.png'
-import cIcon from '../assets/c.png'
 import nodeIcon from '../assets/node.png'
 import expressIcon from '../assets/express.png'
 import springIcon from '../assets/spring.png'
@@ -12,6 +11,16 @@ import scikitLearnIcon from '../assets/scikit_learn.png'
 import pandasIcon from '../assets/pandas.png'
 import numpyIcon from '../assets/numpy.png'
 import matplotlibIcon from '../assets/matplotlib.png'
+import viteIcon from '../assets/vite.svg'
+import csharpIcon from '../assets/csharp.svg'
+import tailwindIcon from '../assets/tailwind.svg'
+import djangoIcon from '../assets/django.svg'
+import aspnetIcon from '../assets/aspnet.svg'
+import postgresqlIcon from '../assets/postgresql.svg'
+import firebaseIcon from '../assets/firebase.svg'
+import flutterIcon from '../assets/flutter.svg'
+import gitIcon from '../assets/git.svg'
+import cloudRunIcon from '../assets/cloud-run.svg'
 
 const technologies = [
   // Languages
@@ -39,9 +48,9 @@ const technologies = [
     ),
   },
   {
-    name: 'C Language',
-    color: '#00599C',
-    icon: <img src={cIcon} alt="C Language" className="h-12 w-12 object-contain" />,
+    name: 'C#',
+    color: '#68217A',
+    icon: <img src={csharpIcon} alt="C sharp" className="h-12 w-12 object-contain" />,
   },
   // Frontend/Mobile
   {
@@ -62,6 +71,16 @@ const technologies = [
       </svg>
     ),
   },
+  {
+    name: 'Vite',
+    color: '#646CFF',
+    icon: <img src={viteIcon} alt="Vite" className="h-12 w-12 object-contain" />,
+  },
+  {
+    name: 'Tailwind CSS',
+    color: '#38BDF8',
+    icon: <img src={tailwindIcon} alt="Tailwind CSS" className="h-12 w-12 object-contain" />,
+  },
   // Backend/Runtimes
   {
     name: 'Node.js',
@@ -77,6 +96,16 @@ const technologies = [
     name: 'Spring Boot',
     color: '#6DB33F',
     icon: <img src={springIcon} alt="Spring Boot" className="h-12 w-12 object-contain" />,
+  },
+  {
+    name: 'Django',
+    color: '#092E20',
+    icon: <img src={djangoIcon} alt="Django" className="h-12 w-12 object-contain" />,
+  },
+  {
+    name: 'ASP.NET',
+    color: '#512BD4',
+    icon: <img src={aspnetIcon} alt="ASP.NET" className="h-12 w-12 object-contain" />,
   },
   // Databases
   {
@@ -98,6 +127,32 @@ const technologies = [
         <path d="M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.888 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29c.213 0 .49 10.695.49 10.695-.381-.045-.765-1.76-.765-2.405z"/>
       </svg>
     ),
+  },
+  {
+    name: 'PostgreSQL',
+    color: '#336791',
+    icon: <img src={postgresqlIcon} alt="PostgreSQL" className="h-12 w-12 object-contain" />,
+  },
+  {
+    name: 'Firebase / Firestore',
+    color: '#FFCA28',
+    icon: <img src={firebaseIcon} alt="Firebase and Firestore" className="h-12 w-12 object-contain" />,
+  },
+  // Mobile and delivery
+  {
+    name: 'Flutter',
+    color: '#54C5F8',
+    icon: <img src={flutterIcon} alt="Flutter" className="h-12 w-12 object-contain" />,
+  },
+  {
+    name: 'Git / GitHub',
+    color: '#F0F0F0',
+    icon: <img src={gitIcon} alt="Git and GitHub" className="h-12 w-12 object-contain" />,
+  },
+  {
+    name: 'Google Cloud Run',
+    color: '#4285F4',
+    icon: <img src={cloudRunIcon} alt="Google Cloud Run" className="h-12 w-12 object-contain" />,
   },
   // Web Core
   {
